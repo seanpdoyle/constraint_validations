@@ -10,5 +10,10 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require rails-ujs
+//= require constraint_validations
 //= require_tree .
+//= require_self
+
+addEventListener("DOMContentLoaded", () => {
+  ConstraintValidations.connect(document, { disableSubmitWhenInvalid: (element) => true })
+})

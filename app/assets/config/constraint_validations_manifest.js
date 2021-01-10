@@ -1,1 +1,1 @@
-//= link_directory ../stylesheets/constraint_validations .css
+//= link_directory ../javascripts/constraint_validations .js

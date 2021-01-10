@@ -1,0 +1,4 @@
+<%= {
+  badInput: object.errors.generate_message(method_name, :invalid),
+  valueMissing: object.errors.generate_message(method_name, :blank),
+}.to_json %>

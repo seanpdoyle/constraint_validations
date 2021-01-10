@@ -1,0 +1,41 @@
+<section>
+  <h2>Validate</h2>
+
+  <%= form_with model: message do |form| %>
+    <%= form.validation_message_template do |messages, tag| %>
+      <%= tag.span messages.to_sentence, style: "color: red;" %>
+    <% end %>
+
+    <%= form.label :subject %>
+    <%= form.text_field :subject %>
+    <%= form.validation_message :subject %>
+
+    <%= form.label :content %>
+    <%= form.text_area :content %>
+    <%= form.validation_message :content %>
+
+    <%= form.button %>
+  <% end %>
+</section>
+
+<section>
+  <h2>Novalidate</h2>
+
+  <%= form_with model: message, html: { novalidate: true } do |form| %>
+    <%= form.validation_message_template do |errors, tag| %>
+      <span <%= tag.attributes({}) %> class="default"><%= errors.to_sentence %></span>
+    <% end %>
+
+    <%= form.label :subject %>
+    <%= form.text_field :subject %>
+    <%= form.validation_message :subject do |errors, tag| %>
+      <p <%= tag.attributes({}) %> class="customized"><%= errors.to_sentence %></p>
+    <% end %>
+
+    <%= form.label :content %>
+    <%= form.text_area :content %>
+    <%= form.validation_message :content %>
+
+    <%= form.button %>
+  <% end %>
+</section>
