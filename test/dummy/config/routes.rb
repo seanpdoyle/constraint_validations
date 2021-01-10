@@ -1,3 +1,3 @@
 Rails.application.routes.draw do
-  mount ConstraintValidations::Engine => "/constraint_validations"
+  resources :messages, only: [:new, :create]
 end
