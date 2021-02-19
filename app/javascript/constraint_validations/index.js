@@ -1,4 +1,4 @@
-class ConstraintValidations {
+export default class ConstraintValidations {
   static connect(element = document, options = {}) {
     new this(element, options).connect()
   }
