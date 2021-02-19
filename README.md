@@ -215,6 +215,8 @@ If your application uses Stimulus, declare a [controller][] and invoke
 `ConstraintValidations.disconnect` within its [disconnect()][] lifecycle hook:
 
 ```javascript
+import ConstraintValidations from "@seanpdoyle/constraint_validations"
+
 export default class extends Controller {
   initialize() {
     this.validations = new ConstraintValidations(this.element)
@@ -262,6 +264,11 @@ To test this out on your own, clone the repository and execute:
 bundle install
 bin/rails test test/**/*_test.rb
 ```
+
+## Contributing
+
+Read the [CONTRIBUTING.md](./CONTRIBUTING.md) guidelines to learn how to make
+contributions.
 
 ## License
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
