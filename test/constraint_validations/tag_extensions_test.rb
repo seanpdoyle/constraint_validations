@@ -67,7 +67,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ActiveSupport::TestCase
     ERB
 
     assert_select "input[aria-describedby]", count: 0
-    assert_select "span", count: 1
+    assert_select "span[id=?]", "#{Message.model_name.singular}_content_validation_message", count: 1
   end
 
   test "#render encodes aria-describedby reference to the validation message element when the field is invalid" do

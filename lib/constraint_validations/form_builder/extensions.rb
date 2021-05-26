@@ -85,7 +85,7 @@ module ConstraintValidations
       #   <%= form.text_field :subject, aria: {describedby: form.validation_message_id(:subject)} %>
       #
       def validation_message_id(field)
-        FormBuilder.validation_message_id(@template, @object, field, index: @index) if errors(field).any?
+        FormBuilder.validation_message_id(@template, @object, field, index: @index)
       end
 
       # Delegates to the <tt>FormBuilder#object</tt> property when possible, and

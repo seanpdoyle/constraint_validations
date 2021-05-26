@@ -100,7 +100,7 @@ class ConstraintValidations::FormBuilderTest < ActiveSupport::TestCase
     assert_select "span[id=?]", "#{message.model_name.singular}_content_validation_message", count: 1
   end
 
-  test "#validation_message_id returns nil when the field is valid" do
+  test "#validation_message_id returns the DOM id when the field is valid" do
     message = Message.new(content: "no empty!").tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
@@ -109,7 +109,7 @@ class ConstraintValidations::FormBuilderTest < ActiveSupport::TestCase
       <% end %>
     ERB
 
-    assert_select "span:not([id])", count: 1
+    assert_select "span[id=?]", "#{message.model_name.singular}_content_validation_message", count: 1
   end
 
   test "#errors yields messages to the block" do
