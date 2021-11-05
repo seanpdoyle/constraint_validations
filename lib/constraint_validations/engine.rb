@@ -59,11 +59,6 @@ module ConstraintValidations
       module ::ActionView
         module Helpers
           module Tags
-            class ActionText
-              prepend AriaTagsExtension
-              prepend ValidationMessageExtension
-            end
-
             class Select
               prepend AriaTagsExtension
               prepend ValidationMessageExtension
@@ -82,6 +77,19 @@ module ConstraintValidations
             [RadioButton, CheckBox].each do |kls|
               kls.prepend CheckableAriaTagsExtension
               kls.prepend ValidationMessageExtension
+            end
+          end
+        end
+      end
+    end
+
+    ActiveSupport.on_load :action_text_rich_text do
+      module ::ActionView
+        module Helpers
+          module Tags
+            class ActionText
+              prepend AriaTagsExtension
+              prepend ValidationMessageExtension
             end
           end
         end
