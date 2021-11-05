@@ -23,13 +23,13 @@
 
   <%= form_with model: message, html: { novalidate: true } do |form| %>
     <%= form.validation_message_template do |errors, tag| %>
-      <span <%= tag.attributes({}) %> class="default"><%= errors.to_sentence %></span>
+      <%= tag.span errors.to_sentence, class: "default" %>
     <% end %>
 
     <%= form.label :subject %>
     <%= form.text_field :subject %>
     <%= form.validation_message :subject do |errors, tag| %>
-      <p <%= tag.attributes({}) %> class="customized"><%= errors.to_sentence %></p>
+      <%= tag.p errors.to_sentence, class: "customized" %>
     <% end %>
 
     <%= form.label :content %>
