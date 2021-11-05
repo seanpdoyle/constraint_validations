@@ -9,15 +9,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["2.7", "3.0"]
+        ruby-version:
+          - "2.7"
+          - "3.0"
+        rails-version:
+          - "6.1"
+          - "main"
 
+    env:
+      RAILS_VERSION: "${{ matrix.rails-version }}"
+
+    name: ${{ format('Tests (Ruby {0}, Rails {1})', matrix.ruby-version, matrix.rails-version) }}
     runs-on: "ubuntu-latest"
 
     steps:
     - uses: "actions/checkout@v2"
     - uses: "ruby/setup-ruby@v1"
       with:
-        ruby-version: ${{ matrix.ruby }}
+        ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
 
     - run: bin/rails test test/**/*_test.rb
+
+    - name: Fail when generated changes are not checked-in
+      run: |
+        git update-index --refresh
+        git diff-index --quiet HEAD --

@@ -7,7 +7,16 @@ gemspec
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
 
-gem "rails", github: "rails/rails"
+rails_version = ENV.fetch("RAILS_VERSION", "6.1")
+
+if rails_version == "main"
+  rails_constraint = { github: "rails/rails" }
+  gem "sprockets-rails"
+else
+  rails_constraint = "~> #{rails_version}.0"
+end
+
+gem "rails", rails_constraint
 
 group :test do
   gem "capybara", '>= 3.26'
