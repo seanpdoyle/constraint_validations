@@ -101,7 +101,12 @@ module ConstraintValidations
     end
 
     initializer "constraint_validations.assets" do |app|
-      app.config.assets.precompile << "constraint_validations.js"
+      app.config.assets.precompile += %w(
+        constraint_validations.js
+        constraint_validations.js.map
+        constraint_validations.es.js
+        constraint_validations.es.js.map
+      )
     end
   end
 end
