@@ -6,3 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Resolve issues with generating nested `fields` and `fields_for` identifiers.
+
+    *Sean Doyle*

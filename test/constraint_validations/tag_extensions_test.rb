@@ -11,6 +11,8 @@ class ConstraintValidations::AriaTagExtensionsTest < ActiveSupport::TestCase
     @document_root_element.tap { |element| raise "Don't forget to call `render`" if element.nil? }
   end
 
+  setup { @object_name = "aria_tag_extensions_test_message" }
+
   Message = Class.new do
     include ActiveModel::Model
     include ActiveModel::Attributes
@@ -67,7 +69,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ActiveSupport::TestCase
     ERB
 
     assert_select "input[aria-describedby]", count: 0
-    assert_select "span[id=?]", "#{Message.model_name.singular}_content_validation_message", count: 1
+    assert_select "span[id=?]", "#{@object_name}_content_validation_message", count: 1
   end
 
   test "#render encodes aria-describedby reference to the validation message element when the field is invalid" do
@@ -80,8 +82,8 @@ class ConstraintValidations::AriaTagExtensionsTest < ActiveSupport::TestCase
       <% end %>
     ERB
 
-    assert_select "input[aria-describedby~=?]", "#{message.model_name.singular}_content_validation_message", count: 1
-    assert_select "span[id=?]", "#{message.model_name.singular}_content_validation_message", count: 1
+    assert_select "input[aria-describedby~=?]", "#{@object_name}_content_validation_message", count: 1
+    assert_select "span[id=?]", "#{@object_name}_content_validation_message", count: 1
   end
 
   test "#render prepends to existing aria-describedby values when the field is invalid" do
@@ -95,10 +97,21 @@ class ConstraintValidations::AriaTagExtensionsTest < ActiveSupport::TestCase
       <% end %>
     ERB
 
-    assert_select "input[aria-describedby~=?]", "#{message.model_name.singular}_content_validation_message", count: 1
+    assert_select "input[aria-describedby~=?]", "#{@object_name}_content_validation_message", count: 1
     assert_select "input[aria-describedby~=?]", "other_description", count: 1
   end
 
+  test "#render encodes aria-errormessage reference with form builder namespace" do
+    render locals: {message: Message.new}, inline: <<~ERB
+      <%= fields model: message, namespace: "namespace" do |form| %>
+      <%= form.text_field :content %>
+      <%= form.validation_message :content %>
+      <% end %>
+    ERB
+
+    assert_select "input[aria-errormessage~=?]", "namespace_#{@object_name}_content_validation_message", count: 1
+    assert_select "span[id=?]", "namespace_#{@object_name}_content_validation_message", count: 1
+  end
 
   test "#render encodes aria-errormessage reference to the validation message element when the field is valid" do
     render locals: {message: Message.new}, inline: <<~ERB
@@ -108,7 +121,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ActiveSupport::TestCase
       <% end %>
     ERB
 
-    assert_select "input[aria-errormessage~=?]", "#{Message.model_name.singular}_content_validation_message", count: 1
+    assert_select "input[aria-errormessage~=?]", "#{@object_name}_content_validation_message", count: 1
   end
 
   test "#render encodes aria-errormessage reference to the validation message element when the field is invalid" do
@@ -121,8 +134,36 @@ class ConstraintValidations::AriaTagExtensionsTest < ActiveSupport::TestCase
       <% end %>
     ERB
 
-    assert_select "input[aria-errormessage~=?]", "#{message.model_name.singular}_content_validation_message", count: 1
-    assert_select "span[id=?]", "#{message.model_name.singular}_content_validation_message", count: 1
+    assert_select "input[aria-errormessage~=?]", "#{@object_name}_content_validation_message", count: 1
+    assert_select "span[id=?]", "#{@object_name}_content_validation_message", count: 1
+  end
+
+  test "#render encodes aria-errormessage reference with a nested form builder" do
+    render locals: {message: Message.new}, inline: <<~ERB
+      <%= fields model: message do |form| %>
+        <%= form.fields :nested, model: message, index: 1 do |nested_form| %>
+          <%= nested_form.text_field :content %>
+          <%= nested_form.validation_message :content %>
+        <% end %>
+      <% end %>
+    ERB
+
+    assert_select "input[aria-errormessage~=?]", "#{@object_name}_nested_1_content_validation_message", count: 1
+    assert_select "span[id=?]", "#{@object_name}_nested_1_content_validation_message", count: 1
+  end
+
+  test "#render encodes aria-errormessage reference with a nested form builder's parent's namespace" do
+    render locals: {message: Message.new}, inline: <<~ERB
+      <%= fields model: message, namespace: "namespace" do |form| %>
+        <%= form.fields :nested, model: message, index: 1 do |nested_form| %>
+          <%= nested_form.text_field :content %>
+          <%= nested_form.validation_message :content %>
+        <% end %>
+      <% end %>
+    ERB
+
+    assert_select "input[aria-errormessage~=?]", "namespace_#{@object_name}_nested_1_content_validation_message", count: 1
+    assert_select "span[id=?]", "namespace_#{@object_name}_nested_1_content_validation_message", count: 1
   end
 
   test "#render sets aria-invalid when the instance is invalid" do

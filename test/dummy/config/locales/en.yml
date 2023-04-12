@@ -31,3 +31,6 @@
 
 en:
   hello: "Hello world"
+  errors:
+    messages:
+      blank: "can't be blank"

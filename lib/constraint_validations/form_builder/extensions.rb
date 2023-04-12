@@ -4,7 +4,13 @@ module ConstraintValidations
       def initialize(*)
         super
 
-        @validation_message_template = proc { |messages, tag| tag.span(messages.to_sentence) }
+        @validation_message_template =
+          if (parent_builder = @options[:parent_builder]) &&
+              (inherited_validation_message_template = parent_builder.instance_values["validation_message_template"])
+            inherited_validation_message_template
+          else
+            proc { |messages, tag| tag.span(messages.to_sentence) }
+          end
       end
 
       # Captures a block for rendering both server- and client-side validation
@@ -84,8 +90,8 @@ module ConstraintValidations
       #
       #   <%= form.text_field :subject, aria: {describedby: form.validation_message_id(:subject)} %>
       #
-      def validation_message_id(field)
-        FormBuilder.validation_message_id(@template, @object, field, index: @index)
+      def validation_message_id(field, index: @index, namespace: @options[:namespace])
+        FormBuilder.validation_message_id(@template, @object_name, field, index: index, namespace: namespace)
       end
 
       # Delegates to the <tt>FormBuilder#object</tt> property when possible, and
