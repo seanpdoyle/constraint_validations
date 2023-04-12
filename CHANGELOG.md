@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   When a field is determined to be invalid during a client-side submission
+    validation, focus the first field that is invalid. When multiple fields are
+    invalid, do not focus fields after the first. When validating on `blur` events,
+    **do not** focus, since focus is moving manually on behalf of the user.
+
+    *Sean Doyle*
+
 *   Skip `invalid` event intercepts when both `<template data-validation-message-template>` elements and `[aria-errormessage]` elements are omitted from the `<form>`
 
     *Sean Doyle*

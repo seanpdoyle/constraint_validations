@@ -20,10 +20,34 @@ class ValidationsTest < ApplicationSystemTestCase
 
     within_fieldset "Validate" do
       fill_in "Subject", with: "forbidden"
+      fill_in "Content", with: "not empty"
       click_on "Create Message"
 
       assert_field "Subject", valid: false, validation_message: "is reserved"
       assert_button "Create Message", disabled: false
+    end
+  end
+
+  test "focuses first invalid field on submission" do
+    visit new_message_path
+
+    within_fieldset "Validate" do
+      click_on "Create Message"
+
+      assert_field "Subject", valid: false, focused: true
+      assert_field "Content", valid: false, focused: false
+    end
+  end
+
+  test "does not focus an invalid field on blur" do
+    visit new_message_path
+
+    within_fieldset "Validate" do
+      tab_until_focused :field, "Subject"
+      tab_until_focused :field, "Content"
+
+      assert_field "Subject", focused: false, valid: false
+      assert_field "Content", focused: true
     end
   end
 
@@ -33,15 +57,17 @@ class ValidationsTest < ApplicationSystemTestCase
     within_fieldset "Validate" do
       assert_button "Create Message", disabled: false
 
-      fill_in("Subject", with: "").then { send_keys :tab }
+      tab_until_focused :field, "Content"
+      send_keys "valid"
 
       assert_button "Create Message", disabled: true
-      assert_text "can't be blank"
+      assert_field "Subject", validation_message: "can't be blank"
 
-      fill_in("Subject", with: "valid").then { send_keys :tab }
+      fill_in("Subject", with: "valid").then { tab_until_focused :field, "Content" }
 
       assert_button "Create Message", disabled: false
       assert_no_text "can't be blank"
+      assert_no_field validation_message: "can't be blank"
     end
   end
 end

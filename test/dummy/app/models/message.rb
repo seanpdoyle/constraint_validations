@@ -5,6 +5,6 @@ class Message
   attribute :content
   attribute :subject
 
-  validates :content, length: {maximum: 280}
+  validates :content, presence: true, length: {maximum: 280}
   validates :subject, presence: true, exclusion: {in: %w[forbidden]}
 end

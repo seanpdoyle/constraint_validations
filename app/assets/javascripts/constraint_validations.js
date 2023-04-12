@@ -28,6 +28,7 @@ var ConstraintValidations = function() {
     reportFieldValidity=event => {
       if (isFieldElement(event.target) && this.reportValidity(event.target)) {
         event.preventDefault();
+        focusFirstInvalidField(event.target.form || event.target);
       }
     };
     clearAndReportFieldValidity=({target: target}) => {
@@ -83,6 +84,22 @@ var ConstraintValidations = function() {
         return false;
       }
     }
+  }
+  function focusFirstInvalidField(element) {
+    let firstInvalidField;
+    if (element instanceof HTMLFormElement) {
+      for (const field of element.elements) {
+        if (field.validity.valid) {
+          continue;
+        } else {
+          firstInvalidField = field;
+          break;
+        }
+      }
+    } else if ("validity" in element && !element.validity.valid) {
+      firstInvalidField = element;
+    }
+    firstInvalidField?.focus();
   }
   function disableSubmitWhenInvalid(form) {
     if (!form || form.noValidate) return;
