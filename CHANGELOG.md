@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Replace `application/validation_messages` JSON template with a configuration
+    option.
+
+    *Sean Doyle*
+
 *   When a field is determined to be invalid during a client-side submission
     validation, focus the first field that is invalid. When multiple fields are
     invalid, do not focus fields after the first. When validating on `blur` events,

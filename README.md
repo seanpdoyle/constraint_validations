@@ -103,6 +103,58 @@ a DOM id attribute for the field, otherwise returns `nil`
 <%= form.text_field :subject, aria: {describedby: form.validation_message_id(:subject)} %>
 ```
 
+### Configuring client-side validation messages
+
+The `constraint_validations` engine provides a small subset of default mappings
+from [Active Model validation messages][active-model-i18n] to [`ValidityState`
+keys][ValidityState].
+
+For example, fields that are invalid due to [valueMissing][] validations will
+render messages for the corresponding Active Model `blank` message.
+
+Similarly, fields that are invalid due to the more general [badInput][]
+validations will render messages for the general purpose Active Model `invalid`
+message.
+
+To override these messages, there are two keys in the
+`config.constraint_validations` configuration values that are callable. **They
+are expected to return `Hash` that map [ValidityState][] keys to `String`
+messages**.
+
+#### `config.constraint_validations.validation_messages_for_object`
+
+Invoked when rendering fields with `form_with model: ...` or `fields model:`
+calls:
+
+```ruby
+config.constraint_validations.validation_messages_for_object = -> (object:, method_name:) {
+  {
+    badInput: object.errors.generate_message(method_name, :invalid),
+    valueMissing: object.errors.generate_message(method_name, :blank)
+  }
+}
+```
+
+#### `config.constraint_validations.validation_messages_for_object_name`
+
+Invoked when rendering fields with `form_with scope: ...`, or `fields scope:`,
+or [Action View form helpers][] calls:
+
+```ruby
+config.constraint_validations.validation_messages_for_object_name = -> () {
+  {
+    badInput: I18n.translate(:invalid, scope: "errors.messages"),
+    valueMissing: I18n.translate(:blank, scope: "errors.messages")
+  }
+}
+
+```
+[active-model-i18n]: https://guides.rubyonrails.org/i18n.html#error-message-interpolation
+[ValidityState]: https://developer.mozilla.org/en-US/docs/Web/API/ValidityState#instance_properties
+[valueMissing]: https://developer.mozilla.org/en-US/docs/Web/API/ValidityState/valueMissing
+[badInput]: https://developer.mozilla.org/en-US/docs/Web/API/ValidityState/badInput
+[Action View form helpers]: https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/FormTagHelper.html
+
 ### Examples
 
 Consider the following model and controller classes for a hypothetical
