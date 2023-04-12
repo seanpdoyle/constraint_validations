@@ -4,6 +4,21 @@ module ConstraintValidations
   class Engine < ::Rails::Engine
     isolate_namespace ConstraintValidations
 
+    config.constraint_validations = ActiveSupport::InheritableOptions.new(
+      validation_messages_for_object: lambda do |object:, method_name:, **options|
+        {
+          badInput: object.errors.generate_message(method_name, :invalid),
+          valueMissing: object.errors.generate_message(method_name, :blank),
+        }
+      end,
+      validation_messages_for_object_name: lambda do |**options|
+        {
+          badInput: I18n.translate(:invalid, scope: "errors.messages"),
+          valueMissing: I18n.translate(:blank, scope: "errors.messages"),
+        }
+      end
+    )
+
     module AriaTagsExtension
       def render
         if FormBuilder.errors(@object, @method_name).any?
@@ -32,11 +47,15 @@ module ConstraintValidations
         @options["aria-errormessage"] ||= validation_message_id
 
         if @object.present?
-          @options["data-validation-messages"] ||= @template_object.render(
-            partial: "validation_messages",
-            locals: instance_values.symbolize_keys,
-            formats: :json
-          )
+          config = Rails.configuration.constraint_validations
+          source =
+            if @object.respond_to?(@method_name)
+              config.validation_messages_for_object
+            else
+              config.validation_messages_for_object_name
+            end
+
+          @options["data-validation-messages"] ||= source.call(**instance_values.to_options).to_json
         end
 
         if FormBuilder.errors(@object, @method_name).any?
