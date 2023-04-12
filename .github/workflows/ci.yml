@@ -12,6 +12,7 @@ jobs:
           - "2.7"
           - "3.0"
           - "3.1"
+          - "3.2"
         rails-version:
           - "7.0"
           - "6.1"
@@ -25,10 +26,17 @@ jobs:
 
     steps:
     - uses: "actions/checkout@v2"
+    - uses: "actions/setup-node@v2"
+      with:
+        cache: "yarn"
     - uses: "ruby/setup-ruby@v1"
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
+
+    - run: |
+        yarn install
+        yarn build
 
     - run: bin/rails test test/**/*_test.rb
 
