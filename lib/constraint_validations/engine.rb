@@ -26,8 +26,8 @@ module ConstraintValidations
 
     module ValidationMessageExtension
       def render
-        index = @options.fetch("index", @auto_index)
-        validation_message_id = FormBuilder.validation_message_id(@template_object, @object || @object_name, @method_name, index: index)
+        index = @options.fetch(:index, @auto_index)
+        validation_message_id = FormBuilder.validation_message_id(@template_object, @object_name, @method_name, index: index, namespace: @options[:namespace])
 
         @options["aria-errormessage"] ||= validation_message_id
 

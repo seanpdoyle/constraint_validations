@@ -20,6 +20,8 @@ class ConstraintValidations::FormBuilderTest < ActiveSupport::TestCase
     validates :content, presence: true
   end
 
+  setup { @object_name = "form_builder_test_message" }
+
   test "#validation_message_template renders a <template> element" do
     render locals: {message: Message.new}, inline: <<~ERB
       <%= form_with model: message, url: "#" do |form| %>
@@ -55,7 +57,7 @@ class ConstraintValidations::FormBuilderTest < ActiveSupport::TestCase
       <% end %>
     ERB
 
-    assert_select "span[id=?]", "#{message.model_name.singular}_content_validation_message", text: "can't be blank", count: 1
+    assert_select "span[id=?]", "#{@object_name}_content_validation_message", text: "can't be blank", count: 1
   end
 
   test "#validation_message renders messages using the form's message template" do
@@ -70,7 +72,60 @@ class ConstraintValidations::FormBuilderTest < ActiveSupport::TestCase
       <% end %>
     ERB
 
-    assert_select "span[id=?][class=?]", "#{message.model_name.singular}_content_validation_message", "error", text: "can't be blank", count: 1
+    assert_select "span[id=?][class=?]", "#{@object_name}_content_validation_message", "error", text: "can't be blank", count: 1
+  end
+
+  test "#validation_message renders the validation message id with the namespace" do
+    message = Message.new.tap(&:validate)
+
+    render locals: {message: message}, inline: <<~ERB
+      <%= form_with model: message, url: "#", namespace: "namespace" do |form| %>
+        <%= form.validation_message :content %>
+      <% end %>
+    ERB
+
+    assert_select "span[id=?]", "namespace_#{@object_name}_content_validation_message", text: "can't be blank", count: 1
+  end
+
+  test "#validation_message renders messages using the nested form's message template" do
+    message = Message.new.tap(&:validate)
+
+    render locals: {message: message}, inline: <<~ERB
+      <%= form_with model: message, url: "#" do |form| %>
+        <%= form.validation_message_template do |messages, tag| %>
+          <%= tag.span messages.to_sentence, class: "error" %>
+        <% end %>
+
+        <%= form.fields :nested, model: message, index: 1 do |nested_form| %>
+          <%= nested_form.validation_message :content %>
+        <% end %>
+      <% end %>
+    ERB
+
+    assert_select "span[id=?][class=?]", "#{@object_name}_nested_1_content_validation_message", "error", text: "can't be blank", count: 1
+  end
+
+  test "#validation_message renders messages using the overriding nested form's message template" do
+    message = Message.new.tap(&:validate)
+
+    render locals: {message: message}, inline: <<~ERB
+      <%= form_with model: message, url: "#" do |form| %>
+        <%= form.validation_message_template do |messages, tag| %>
+          <%= tag.span messages.to_sentence, class: "error" %>
+        <% end %>
+
+        <%= form.fields :nested, model: message, index: 1 do |nested_form| %>
+          <%= nested_form.validation_message_template do |messages, tag| %>
+            <%= tag.span messages.to_sentence, class: "nested-error" %>
+          <% end %>
+
+          <%= nested_form.validation_message :content %>
+        <% end %>
+        <%= form.validation_message :content %>
+      <% end %>
+    ERB
+
+    assert_select "span[id=?][class=?]", "#{@object_name}_nested_1_content_validation_message", "nested-error", text: "can't be blank", count: 1
   end
 
   test "#validation_message renders via block when provided" do
@@ -85,7 +140,7 @@ class ConstraintValidations::FormBuilderTest < ActiveSupport::TestCase
     ERB
 
     assert_select "span", count: 0
-    assert_select "div[id=?][class=?]", "#{message.model_name.singular}_content_validation_message", "error", text: "can't be blank", count: 1
+    assert_select "div[id=?][class=?]", "#{@object_name}_content_validation_message", "error", text: "can't be blank", count: 1
   end
 
   test "#validation_message_id generates a DOM id for the field when invalid" do
@@ -97,7 +152,7 @@ class ConstraintValidations::FormBuilderTest < ActiveSupport::TestCase
       <% end %>
     ERB
 
-    assert_select "span[id=?]", "#{message.model_name.singular}_content_validation_message", count: 1
+    assert_select "span[id=?]", "#{@object_name}_content_validation_message", count: 1
   end
 
   test "#validation_message_id returns the DOM id when the field is valid" do
@@ -109,7 +164,7 @@ class ConstraintValidations::FormBuilderTest < ActiveSupport::TestCase
       <% end %>
     ERB
 
-    assert_select "span[id=?]", "#{message.model_name.singular}_content_validation_message", count: 1
+    assert_select "span[id=?]", "#{@object_name}_content_validation_message", count: 1
   end
 
   test "#errors yields messages to the block" do
