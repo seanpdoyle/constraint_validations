@@ -23,9 +23,7 @@ export default class ConstraintValidations {
   }
 
   reportFieldValidity = (event) => {
-    if (isFieldElement(event.target)) {
-      this.reportValidity(event.target)
-
+    if (isFieldElement(event.target) && this.reportValidity(event.target)) {
       event.preventDefault()
     }
   }
@@ -67,13 +65,13 @@ export default class ConstraintValidations {
   }
 
   reportValidity(input) {
-    if (input.form?.noValidate) return
-
     const id = input.getAttribute("aria-errormessage")
     const validationMessage = getValidationMessage(input)
     const element = document.getElementById(id) || createValidationMessageFragment(input.form)
 
-    if (id && element) {
+    if (input.form?.noValidate) {
+      return false
+    } else if (id && element) {
       element.id = id
       element.innerHTML = validationMessage
 
@@ -89,9 +87,13 @@ export default class ConstraintValidations {
       if (!element.parentElement) {
         input.insertAdjacentElement("afterend", element)
       }
-    }
 
-    if (input.form && this.willDisableSubmitWhenInvalid(input)) disableSubmitWhenInvalid(input.form)
+      if (input.form && this.willDisableSubmitWhenInvalid(input)) disableSubmitWhenInvalid(input.form)
+
+      return true
+    } else {
+      return false
+    }
   }
 }
 
