@@ -1,27 +1,33 @@
-<section>
-  <h2>Validate</h2>
+<%= form_with model: message, namespace: "validate" do |form| %>
+  <fieldset>
+    <legend>Validate</legend>
 
-  <%= form_with model: message do |form| %>
-    <%= form.validation_message_template do |messages, tag| %>
-      <%= tag.span messages.to_sentence, style: "color: red;" %>
+    <% unless params[:skip] %>
+      <%= form.validation_message_template do |messages, tag| %>
+        <%= tag.span messages.to_sentence, style: "color: red;" %>
+      <% end %>
     <% end %>
 
     <%= form.label :subject %>
     <%= form.text_field :subject %>
-    <%= form.validation_message :subject %>
+    <% unless params[:skip] %>
+      <%= form.validation_message :subject %>
+    <% end %>
 
     <%= form.label :content %>
     <%= form.text_area :content %>
-    <%= form.validation_message :content %>
+    <% unless params[:skip] %>
+      <%= form.validation_message :content %>
+    <% end %>
 
     <%= form.button %>
-  <% end %>
-</section>
+  </fieldset>
+<% end %>
 
-<section>
-  <h2>Novalidate</h2>
+<%= form_with model: message, namespace: "novalidate", html: { novalidate: true } do |form| %>
+  <fieldset>
+    <legend>Novalidate</legend>
 
-  <%= form_with model: message, html: { novalidate: true } do |form| %>
     <%= form.validation_message_template do |errors, tag| %>
       <%= tag.span errors.to_sentence, class: "default" %>
     <% end %>
@@ -37,5 +43,5 @@
     <%= form.validation_message :content %>
 
     <%= form.button %>
-  <% end %>
-</section>
+  </fieldset>
+<% end %>

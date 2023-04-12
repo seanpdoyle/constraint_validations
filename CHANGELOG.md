@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Skip `invalid` event intercepts when both `<template data-validation-message-template>` elements and `[aria-errormessage]` elements are omitted from the `<form>`
+
+    *Sean Doyle*
+
 *   Resolve issues with generating nested `fields` and `fields_for` identifiers.
 
     *Sean Doyle*

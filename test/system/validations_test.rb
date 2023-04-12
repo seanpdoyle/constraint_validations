@@ -4,7 +4,7 @@ class ValidationsTest < ApplicationSystemTestCase
   test "validates fields in the browser through ActiveModel-generated HTML attributes" do
     visit new_message_path
 
-    within_section "Validate" do
+    within_fieldset "Validate" do
       fill_in "Subject", with: ""
       fill_in "Content", with: "?" * 281
       send_keys :tab
@@ -18,7 +18,7 @@ class ValidationsTest < ApplicationSystemTestCase
   test "validates fields on the server" do
     visit new_message_path
 
-    within_section "Validate" do
+    within_fieldset "Validate" do
       fill_in "Subject", with: "forbidden"
       click_on "Create Message"
 
@@ -30,7 +30,7 @@ class ValidationsTest < ApplicationSystemTestCase
   test "disables the submit button when invalid" do
     visit new_message_path
 
-    within_section "Validate" do
+    within_fieldset "Validate" do
       assert_button "Create Message", disabled: false
 
       fill_in("Subject", with: "").then { send_keys :tab }
@@ -50,7 +50,7 @@ class NoValidationsTest < ApplicationSystemTestCase
   test "skips validation within <form novalidate>" do
     visit new_message_path
 
-    within_section "Novalidate" do
+    within_fieldset "Novalidate" do
       fill_in "Subject", with: ""
       send_keys :tab
 
@@ -62,7 +62,7 @@ class NoValidationsTest < ApplicationSystemTestCase
   test "renders server-side errors but does not use Constraint Validation API" do
     visit new_message_path
 
-    within_section "Novalidate" do
+    within_fieldset "Novalidate" do
       click_on "Create Message"
 
       assert_no_field "Subject", valid: true, validation_message: ""
@@ -72,10 +72,24 @@ class NoValidationsTest < ApplicationSystemTestCase
   test "renders field-specific validation message templates" do
     visit new_message_path
 
-    within_section "Novalidate" do
+    within_fieldset "Novalidate" do
       click_on "Create Message"
 
       assert_selector "p.customized", text: "can't be blank"
+    end
+  end
+end
+
+class NativeValidationsTest < ApplicationSystemTestCase
+  test "does not intercept native validations when missing both the [aria-errormessage] element and the `<template>` element" do
+    visit new_message_path skip: true
+
+    within_fieldset "Validate" do
+      fill_in "Subject", with: ""
+      send_keys :tab
+
+      assert_no_text "can't be blank"
+      assert_field "Subject", valid: false, validation_message: "Please fill out this field."
     end
   end
 end
