@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   (Re-)Validate on both `blur` and `input` events. Re-configure those values
+    with the `validatesOn:` configuration key.
+
+    *Sean Doyle*
+
 *   Replace `application/validation_messages` JSON template with a configuration
     option.
 

@@ -1,28 +1,45 @@
 var ConstraintValidations = function() {
   "use strict";
+  const defaultOptions = {
+    disableSubmitWhenInvalid: false,
+    validateOn: [ "blur", "input" ]
+  };
   class ConstraintValidations {
     static connect(element = document, options = {}) {
       new this(element, options).connect();
     }
     constructor(element = document, options = {}) {
       this.element = element;
-      this.options = options;
+      this.options = {
+        ...defaultOptions,
+        ...options
+      };
     }
     connect() {
       this.element.addEventListener("invalid", this.reportFieldValidity, {
         capture: true,
         passive: false
       });
-      this.element.addEventListener("blur", this.clearAndReportFieldValidity, {
-        capture: true,
-        passive: true
-      });
+      for (const eventName of this.options.validateOn) {
+        this.element.addEventListener(eventName, this.clearAndReportFieldValidity, {
+          capture: true,
+          passive: true
+        });
+      }
       this.element.addEventListener("input", this.toggleSubmitsDisabled);
       this.reportValidationMessages();
     }
     disconnect() {
-      this.element.removeEventListener("invalid", this.reportFieldValidity);
-      this.element.removeEventListener("blur", this.clearAndReportFieldValidity);
+      this.element.removeEventListener("invalid", this.reportFieldValidity, {
+        capture: true,
+        passive: false
+      });
+      for (const eventName of this.options.validateOn) {
+        this.element.removeEventListener(eventName, this.clearAndReportFieldValidity, {
+          capture: true,
+          passive: true
+        });
+      }
       this.element.removeEventListener("input", this.toggleSubmitsDisabled);
     }
     reportFieldValidity=event => {
