@@ -298,11 +298,40 @@ If you've called `connect()` on a `<form>` element's ancestor and you'd like to
 opt-out of the validation behavior on the `<form>`, be sure to declare the
 [novalidate][] attribute on the `<form>`.
 
+### Validate on events
+
+By default, fields will validate (and re-validate) on [input][] and [blur][]
+events.
+
+To change the events that will trigger validation, pass along a
+`validatesOn:` option to either the `ConstraintValidations`
+constructor, or to the `ConstraintValidations.connect` static method:
+
+```js
+const element = ...
+const eventNames = ["blur", "input", "my-custom-event"]
+
+new ConstraintValidations(element, { validatesOn: eventNames })
+
+ConstraintValidations.connect(element, { validatesOn: eventNames })
+```
+
+[input]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event
+[blur]: https://developer.mozilla.org/en-US/docs/Web/API/Element/blur_event
+
 ### Disabling submit buttons when invalid
 
 To disable a `<form>` element's `[type="submit]` elements, pass along a
 `disableSubmitWhenInvalid:` option to either the `ConstraintValidations`
-constructor, or to the `ConstraintValidations.connect` static method.
+constructor, or to the `ConstraintValidations.connect` static method:
+
+```js
+const element = ...
+
+new ConstraintValidations(element, { disableSubmitWhenInvalid: true })
+
+ConstraintValidations.connect(element, { disableSubmitWhenInvalid: true })
+```
 
 The value of `disableSubmitWhenInvalid:` can be a boolean, or a function that
 accepts an Element (e.g. `document`, or a reference to an `HTMLFormElement`
