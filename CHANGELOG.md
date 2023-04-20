@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Extend built-in Action View and Action Text classes with their
+    fully-qualified class names instead of re-opening their modules or classes.
+
+    *Sean Doyle*
+
 *   (Re-)Validate on both `blur` and `input` events. Re-configure those values
     with the `validatesOn:` configuration key.
 

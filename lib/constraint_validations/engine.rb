@@ -75,43 +75,30 @@ module ConstraintValidations
     end
 
     ActiveSupport.on_load :action_view do
-      module ::ActionView
-        module Helpers
-          module Tags
-            class Select
-              prepend AriaTagsExtension
-              prepend ValidationMessageExtension
-            end
+      [
+        ActionView::Helpers::Tags::Select,
+        ActionView::Helpers::Tags::TextField,
+        ActionView::Helpers::Tags::TextArea,
+      ].each do |klass|
+        klass.prepend AriaTagsExtension
+        klass.prepend ValidationMessageExtension
+      end
 
-            class TextField
-              prepend AriaTagsExtension
-              prepend ValidationMessageExtension
-            end
-
-            class TextArea
-              prepend AriaTagsExtension
-              prepend ValidationMessageExtension
-            end
-
-            [RadioButton, CheckBox].each do |kls|
-              kls.prepend CheckableAriaTagsExtension
-              kls.prepend ValidationMessageExtension
-            end
-          end
-        end
+      [
+        ActionView::Helpers::Tags::RadioButton,
+        ActionView::Helpers::Tags::CheckBox,
+      ].each do |klass|
+        klass.prepend CheckableAriaTagsExtension
+        klass.prepend ValidationMessageExtension
       end
     end
 
     ActiveSupport.on_load :action_text_rich_text do
-      module ::ActionView
-        module Helpers
-          module Tags
-            class ActionText
-              prepend AriaTagsExtension
-              prepend ValidationMessageExtension
-            end
-          end
-        end
+      [
+        ActionView::Helpers::Tags::ActionText,
+      ].each do |klass|
+        klass.prepend AriaTagsExtension
+        klass.prepend ValidationMessageExtension
       end
     end
 
