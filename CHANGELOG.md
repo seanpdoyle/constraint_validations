@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Eager-load classes in `CI=true` environments to guard against Zeitwerk
+    auto-loading issues.
+
+    *Sean Doyle*
+
 *   Extend built-in Action View and Action Text classes with their
     fully-qualified class names instead of re-opening their modules or classes.
 
