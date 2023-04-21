@@ -1,4 +1,6 @@
 require "html5_validators"
+require "html5_validators/active_model/helper_methods"
+require "html5_validators/active_model/validations"
 
 module ConstraintValidations
   class Engine < ::Rails::Engine
@@ -76,17 +78,17 @@ module ConstraintValidations
 
     ActiveSupport.on_load :action_view do
       [
-        ActionView::Helpers::Tags::Select,
-        ActionView::Helpers::Tags::TextField,
-        ActionView::Helpers::Tags::TextArea,
+        ::ActionView::Helpers::Tags::Select,
+        ::ActionView::Helpers::Tags::TextField,
+        ::ActionView::Helpers::Tags::TextArea,
       ].each do |klass|
         klass.prepend AriaTagsExtension
         klass.prepend ValidationMessageExtension
       end
 
       [
-        ActionView::Helpers::Tags::RadioButton,
-        ActionView::Helpers::Tags::CheckBox,
+        ::ActionView::Helpers::Tags::RadioButton,
+        ::ActionView::Helpers::Tags::CheckBox,
       ].each do |klass|
         klass.prepend CheckableAriaTagsExtension
         klass.prepend ValidationMessageExtension
