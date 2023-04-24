@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Drop intended support for Action Text until the engine itself adds test
+    coverage.
+
+    *Sean Doyle*
+
 *   Eager-load classes in `CI=true` environments to guard against Zeitwerk
     auto-loading issues.
 
