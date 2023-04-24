@@ -95,14 +95,6 @@ module ConstraintValidations
       end
     end
 
-    ActiveSupport.on_load :action_text_rich_text do
-      [
-        ActionView::Helpers::Tags::ActionText,
-      ].each do |klass|
-        klass.prepend AriaTagsExtension
-        klass.prepend ValidationMessageExtension
-      end
-    end
 
     ActiveSupport.on_load :action_controller_base do
       default_form_builder ConstraintValidations::FormBuilder
