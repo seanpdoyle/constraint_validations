@@ -23,7 +23,7 @@ module ConstraintValidations
 
     module AriaTagsExtension
       def render
-        if FormBuilder.errors(@object, @method_name).any?
+        if FormBuilder.errors(@object, @method_name).any? && FormBuilder.visible?(self)
           @options["aria-invalid"] ||= "true"
         end
 
@@ -33,7 +33,7 @@ module ConstraintValidations
 
     module CheckableAriaTagsExtension
       def render
-        if FormBuilder.errors(@object, @method_name).any?
+        if FormBuilder.errors(@object, @method_name).any? && FormBuilder.visible?(self)
           @options["aria-invalid"] ||= ("true" if input_checked?(@options))
         end
 
@@ -46,9 +46,11 @@ module ConstraintValidations
         index = @options.fetch(:index, @auto_index)
         validation_message_id = FormBuilder.validation_message_id(@template_object, @object_name, @method_name, index: index, namespace: @options[:namespace])
 
-        @options["aria-errormessage"] ||= validation_message_id
+        if FormBuilder.visible?(self)
+          @options["aria-errormessage"] ||= validation_message_id
+        end
 
-        if @object.present?
+        if @object.present? && FormBuilder.visible?(self)
           config = Rails.configuration.constraint_validations
           source =
             if @object.respond_to?(@method_name)
@@ -60,7 +62,7 @@ module ConstraintValidations
           @options["data-validation-messages"] ||= source.call(**instance_values.to_options).to_json
         end
 
-        if FormBuilder.errors(@object, @method_name).any?
+        if FormBuilder.errors(@object, @method_name).any? && FormBuilder.visible?(self)
           value = @options["aria-describedby"] || @options.dig(:aria, :describedby)
           tokens = value.to_s.split(/\s/)
           tokens.unshift validation_message_id

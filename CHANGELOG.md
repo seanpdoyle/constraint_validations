@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Omit `[aria-*]`- and `[data-*]`-prefixed attributes from `[type="hidden"]`
+    fields
+
+    *Sean Doyle*
+
 *   Drop intended support for Action Text until the engine itself adds test
     coverage.
 
