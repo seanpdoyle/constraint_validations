@@ -23,6 +23,5 @@ group :test do
   gem "capybara_accessible_selectors", github: "citizensadvice/capybara_accessible_selectors", tag: "v0.4.1"
   gem "rexml"
   gem "selenium-webdriver"
-  gem "webdrivers"
   gem "webrick"
 end
