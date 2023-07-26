@@ -16,6 +16,14 @@ module ConstraintValidations
       block ? yield(validation_messages) : validation_messages
     end
 
+    def self.visible?(tag_builder)
+      if tag_builder.class.respond_to?(:field_type)
+        tag_builder.class.field_type != "hidden"
+      else
+        true
+      end
+    end
+
     class BackPorts < SimpleDelegator
       #
       # Implmentation backported from

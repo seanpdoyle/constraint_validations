@@ -35,6 +35,16 @@ class ConstraintValidations::AriaTagExtensionsTest < ActiveSupport::TestCase
     assert_select "input[required][maxlength=?]", "100", count: 1
   end
 
+  test "#render omits Active Model validation message translations from [type=hidden]" do
+    render locals: {message: Message.new}, inline: <<~ERB
+      <%= fields model: message do |form| %>
+        <%= form.hidden_field :content %>
+      <% end %>
+    ERB
+
+    assert_select "input[type=?][data-validation-messages]", "hidden", count: 0
+  end
+
   test "#render encodes Active Model validation message translations" do
     render locals: {message: Message.new}, inline: <<~ERB
       <%= form_with model: message, url: "#" do |form| %>
@@ -70,6 +80,16 @@ class ConstraintValidations::AriaTagExtensionsTest < ActiveSupport::TestCase
 
     assert_select "input[aria-describedby]", count: 0
     assert_select "span[id=?]", "#{@object_name}_content_validation_message", count: 1
+  end
+
+  test "#render omits aria-describedby when the field is [type=hidden]" do
+    render locals: {message: Message.new}, inline: <<~ERB
+      <%= fields model: message do |form| %>
+        <%= form.hidden_field :content %>
+      <% end %>
+    ERB
+
+    assert_select "input[type=?][aria-describedby]", "hidden", count: 0
   end
 
   test "#render encodes aria-describedby reference to the validation message element when the field is invalid" do
@@ -111,6 +131,16 @@ class ConstraintValidations::AriaTagExtensionsTest < ActiveSupport::TestCase
 
     assert_select "input[aria-errormessage~=?]", "namespace_#{@object_name}_content_validation_message", count: 1
     assert_select "span[id=?]", "namespace_#{@object_name}_content_validation_message", count: 1
+  end
+
+  test "#render omits aria-errormessage from [type=hidden]" do
+    render locals: {message: Message.new}, inline: <<~ERB
+      <%= fields model: message do |form| %>
+        <%= form.hidden_field :content %>
+      <% end %>
+    ERB
+
+    assert_select "input[type=?][aria-errormessage]", "hidden", count: 0
   end
 
   test "#render encodes aria-errormessage reference to the validation message element when the field is valid" do
@@ -176,6 +206,18 @@ class ConstraintValidations::AriaTagExtensionsTest < ActiveSupport::TestCase
     ERB
 
     assert_select "input[type=?][aria-invalid=?]", "text", "true", count: 1
+  end
+
+  test "#render omits aria-invalid when the [type=hidden]" do
+    message = Message.new.tap(&:validate)
+
+    render locals: {message: message}, inline: <<~ERB
+      <%= fields model: message do |form| %>
+        <%= form.hidden_field :content %>
+      <% end %>
+    ERB
+
+    assert_select "input[type=?][aria-invalid]", "hidden", count: 0
   end
 
   test "#render sets aria-invalid when the checkbox is checked and the field is invalid" do
