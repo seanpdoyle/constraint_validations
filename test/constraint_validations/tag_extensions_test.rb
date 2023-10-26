@@ -1,16 +1,6 @@
 require "test_helper"
 
-class ConstraintValidations::AriaTagExtensionsTest < ActiveSupport::TestCase
-  include Rails::Dom::Testing::Assertions
-
-  def render(*arguments, renderer: ApplicationController.renderer, **options, &block)
-    renderer.render(*arguments, **options, &block).tap { |html| @document_root_element = Nokogiri::HTML(html) }
-  end
-
-  def document_root_element
-    @document_root_element.tap { |element| raise "Don't forget to call `render`" if element.nil? }
-  end
-
+class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::TestCase
   setup { @object_name = "aria_tag_extensions_test_message" }
 
   Message = Class.new do
