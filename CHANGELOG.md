@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Merge attributes into `@html_options` when available (for example, building
+    `<select>` elements)
+
+    *Sean Doyle*
+
 *   Omit `[aria-*]`- and `[data-*]`-prefixed attributes from `[type="hidden"]`
     fields
 

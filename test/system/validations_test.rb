@@ -10,6 +10,7 @@ class ValidationsTest < ApplicationSystemTestCase
       send_keys :tab
 
       assert_field "Content", with: "?" * 280
+      assert_field "Status", valid: false, validation_message: "Please select an item in the list."
       assert_field "Subject", valid: false, validation_message: "can't be blank"
       assert_text "can't be blank"
     end
@@ -19,6 +20,7 @@ class ValidationsTest < ApplicationSystemTestCase
     visit new_message_path
 
     within_fieldset "Validate" do
+      select "published", from: "Status"
       fill_in "Subject", with: "forbidden"
       fill_in "Content", with: "not empty"
       click_on "Create Message"
@@ -34,7 +36,8 @@ class ValidationsTest < ApplicationSystemTestCase
     within_fieldset "Validate" do
       click_on "Create Message"
 
-      assert_field "Subject", valid: false, focused: true
+      assert_field "Status", valid: false, focused: true
+      assert_field "Subject", valid: false, focused: false
       assert_field "Content", valid: false, focused: false
     end
   end
@@ -43,9 +46,11 @@ class ValidationsTest < ApplicationSystemTestCase
     visit new_message_path
 
     within_fieldset "Validate" do
+      tab_until_focused :field, "Status"
       tab_until_focused :field, "Subject"
       tab_until_focused :field, "Content"
 
+      assert_field "Status", focused: false, valid: false
       assert_field "Subject", focused: false, valid: false
       assert_field "Content", focused: true
     end
@@ -61,12 +66,15 @@ class ValidationsTest < ApplicationSystemTestCase
       send_keys "valid"
 
       assert_button "Create Message", disabled: true
+      assert_field "Status", validation_message: "can't be blank"
       assert_field "Subject", validation_message: "can't be blank"
 
+      select("published", from: "Status").then { tab_until_focused :field, "Subject" }
       fill_in("Subject", with: "valid").then { tab_until_focused :field, "Content" }
 
       assert_button "Create Message", disabled: false
       assert_no_text "can't be blank"
+      assert_no_field validation_message: "Please select an item in the list."
       assert_no_field validation_message: "can't be blank"
     end
   end
@@ -101,7 +109,7 @@ class NoValidationsTest < ApplicationSystemTestCase
     within_fieldset "Novalidate" do
       click_on "Create Message"
 
-      assert_selector "p.customized", text: "can't be blank"
+      assert_selector "p.customized", text: "can't be blank", count: 2
     end
   end
 end
@@ -115,6 +123,7 @@ class NativeValidationsTest < ApplicationSystemTestCase
       send_keys :tab
 
       assert_no_text "can't be blank"
+      assert_field "Status", valid: false, validation_message: "Please select an item in the list."
       assert_field "Subject", valid: false, validation_message: "Please fill out this field."
     end
   end

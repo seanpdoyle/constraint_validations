@@ -8,6 +8,12 @@
       <% end %>
     <% end %>
 
+    <%= form.label :status %>
+    <%= form.select :status, ["published", "draft"], prompt: true %>
+    <% unless params[:skip] %>
+      <%= form.validation_message :status %>
+    <% end %>
+
     <%= form.label :subject %>
     <%= form.text_field :subject %>
     <% unless params[:skip] %>
@@ -30,6 +36,12 @@
 
     <%= form.validation_message_template do |errors, tag| %>
       <%= tag.span errors.to_sentence, class: "default" %>
+    <% end %>
+
+    <%= form.label :status %>
+    <%= form.select :status, ["published", "draft"], prompt: true %>
+    <%= form.validation_message :status do |errors, tag| %>
+      <%= tag.p errors.to_sentence, class: "customized" %>
     <% end %>
 
     <%= form.label :subject %>

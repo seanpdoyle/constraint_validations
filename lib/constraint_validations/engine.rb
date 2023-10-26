@@ -23,8 +23,15 @@ module ConstraintValidations
 
     module AriaTagsExtension
       def render
+        attributes = @options
+
+        if @html_options.is_a?(Hash)
+          attributes = @html_options
+          attributes.reverse_merge!("required" => @options.delete("required"))
+        end
+
         if FormBuilder.errors(@object, @method_name).any? && FormBuilder.visible?(self)
-          @options["aria-invalid"] ||= "true"
+          attributes["aria-invalid"] ||= "true"
         end
 
         super
@@ -46,8 +53,15 @@ module ConstraintValidations
         index = @options.fetch(:index, @auto_index)
         validation_message_id = FormBuilder.validation_message_id(@template_object, @object_name, @method_name, index: index, namespace: @options[:namespace])
 
+        attributes = @options
+
+        if @html_options.is_a?(Hash)
+          attributes = @html_options
+          attributes.reverse_merge!("required" => @options.delete("required"))
+        end
+
         if FormBuilder.visible?(self)
-          @options["aria-errormessage"] ||= validation_message_id
+          attributes["aria-errormessage"] ||= validation_message_id
         end
 
         if @object.present? && FormBuilder.visible?(self)
@@ -59,18 +73,18 @@ module ConstraintValidations
               config.validation_messages_for_object_name
             end
 
-          @options["data-validation-messages"] ||= source.call(**instance_values.to_options).to_json
+          attributes["data-validation-messages"] ||= source.call(**instance_values.to_options).to_json
         end
 
         if FormBuilder.errors(@object, @method_name).any? && FormBuilder.visible?(self)
-          value = @options["aria-describedby"] || @options.dig(:aria, :describedby)
+          value = attributes["aria-describedby"] || attributes.dig(:aria, :describedby)
           tokens = value.to_s.split(/\s/)
           tokens.unshift validation_message_id
 
-          if @options.dig(:aria, :describedby)
-            @options.deep_merge! aria: { describedby: tokens }
+          if attributes.dig(:aria, :describedby)
+            attributes.deep_merge! aria: { describedby: tokens }
           else
-            @options.merge! "aria-describedby" => tokens.join(" ")
+            attributes.merge! "aria-describedby" => tokens.join(" ")
           end
         end
 
