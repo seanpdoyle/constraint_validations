@@ -1,16 +1,6 @@
 require "test_helper"
 
-class ConstraintValidations::FormBuilderTest < ActiveSupport::TestCase
-  include Rails::Dom::Testing::Assertions
-
-  def render(*arguments, renderer: ApplicationController.renderer, **options, &block)
-    renderer.render(*arguments, **options, &block).tap { |html| @document_root_element = Nokogiri::HTML(html) }
-  end
-
-  def document_root_element
-    @document_root_element.tap { |element| raise "Don't forget to call `render`" if element.nil? }
-  end
-
+class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
   Message = Class.new do
     include ActiveModel::Model
     include ActiveModel::Attributes
