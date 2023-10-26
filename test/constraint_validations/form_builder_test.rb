@@ -13,7 +13,7 @@ class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
 
   test "#validation_message_template renders a <template> element" do
     render locals: {message: Message.new}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.validation_message_template do |messages, tag| %>
           <%= tag.span messages.to_sentence, class: "errors" %>
         <% end %>
@@ -27,7 +27,7 @@ class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
 
   test "#validation_message_template renders the default template when a block is omitted" do
     render locals: {message: Message.new}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.validation_message_template %>
       <% end %>
     ERB
@@ -41,7 +41,7 @@ class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
     message = Message.new.tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.validation_message :content %>
       <% end %>
     ERB
@@ -53,7 +53,7 @@ class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
     message = Message.new.tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.validation_message_template do |messages, tag| %>
           <%= tag.span messages.to_sentence, class: "error" %>
         <% end %>
@@ -68,7 +68,7 @@ class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
     message = Message.new.tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#", namespace: "namespace" do |form| %>
+      <%= fields model: message, namespace: "namespace" do |form| %>
         <%= form.validation_message :content %>
       <% end %>
     ERB
@@ -80,7 +80,7 @@ class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
     message = Message.new.tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.validation_message_template do |messages, tag| %>
           <%= tag.span messages.to_sentence, class: "error" %>
         <% end %>
@@ -98,7 +98,7 @@ class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
     message = Message.new.tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.validation_message_template do |messages, tag| %>
           <%= tag.span messages.to_sentence, class: "error" %>
         <% end %>
@@ -121,7 +121,7 @@ class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
     message = Message.new.tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <% form.validation_message :content do |messages, tag| %>
           <%= tag.div messages.to_sentence, class: "error" %>
         <% end %>
@@ -136,7 +136,7 @@ class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
     message = Message.new.tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= tag.span id: form.validation_message_id(:content) %>
       <% end %>
     ERB
@@ -148,7 +148,7 @@ class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
     message = Message.new(content: "no empty!").tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= tag.span id: form.validation_message_id(:content) %>
       <% end %>
     ERB
@@ -160,7 +160,7 @@ class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
     message = Message.new.tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <% form.errors(:content) do |errors| %>
           <span><%= errors.to_sentence %></span>
         <% end %>
@@ -174,7 +174,7 @@ class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
     message = Message.new.tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <span><%= form.errors(:content).to_sentence %></span>
       <% end %>
     ERB
