@@ -14,7 +14,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
 
   test "#render encodes validation attributes onto the element" do
     render locals: {message: Message.new}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.text_field :content %>
       <% end %>
     ERB
@@ -35,7 +35,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
 
   test "#render encodes Active Model validation message translations into text fields" do
     render locals: {message: Message.new}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.text_field :content %>
       <% end %>
     ERB
@@ -55,17 +55,17 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "select", count: 1 do |select, *|
+    assert_select "select[data-validation-messages]", count: 1 do |select, *|
       messages = JSON.parse(select["data-validation-messages"])
 
-      assert messages["badInput"] = "is invalid"
-      assert messages["valueMissing"] = "can't be blank"
+      assert_equal "is invalid", messages["badInput"]
+      assert_equal "can't be blank", messages["valueMissing"]
     end
   end
 
-  test "#render skips validation messages when `form_with model: nil`" do
+  test "#render skips validation messages when `model: nil`" do
     render inline: <<~ERB
-      <%= form_with model: nil, scope: :message, url: "#" do |form| %>
+      <%= fields model: nil, scope: :message do |form| %>
         <%= form.text_field :content %>
       <% end %>
     ERB
@@ -75,7 +75,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
 
   test "#render omits aria-describedby when the field is valid" do
     render locals: {message: Message.new}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.text_field :content %>
         <%= form.validation_message :content %>
       <% end %>
@@ -99,7 +99,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
     message = Message.new.tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.text_field :content %>
         <%= form.validation_message :content %>
       <% end %>
@@ -127,7 +127,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
     message = Message.new.tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.text_field :content, aria: { describedby: "other_description" } %>
         <%= form.validation_message :content %>
         <span id="other_description">Optional</span>
@@ -174,7 +174,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
 
   test "#render encodes aria-errormessage reference to the validation message element when the field is valid" do
     render locals: {message: Message.new}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.text_field :content %>
         <%= form.validation_message :content %>
       <% end %>
@@ -187,7 +187,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
     message = Message.new.tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.text_field :content %>
         <%= form.validation_message :content %>
       <% end %>
@@ -229,7 +229,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
     message = Message.new.tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.text_field :content %>
       <% end %>
     ERB
@@ -278,7 +278,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
     message = Message.new(published: true).tap(&:validate)
 
     render locals: {message: message}, inline: <<~ERB
-      <%= form_with model: message, url: "#" do |form| %>
+      <%= fields model: message do |form| %>
         <%= form.check_box :published %>
       <% end %>
     ERB
