@@ -19,8 +19,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[data-validation-messages]", count: 1
-    assert_select "input[required][maxlength=?]", "100", count: 1
+    assert_element "input", required: true, maxlength: 100, "data-validation-messages": true, count: 1
   end
 
   test "#render omits Active Model validation message translations from [type=hidden]" do
@@ -30,7 +29,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[type=?][data-validation-messages]", "hidden", count: 0
+    assert_element "input", type: "hidden", "data-validation-messages": false, visible: false, count: 1
   end
 
   test "#render encodes Active Model validation message translations into text fields" do
@@ -40,11 +39,11 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input", count: 1 do |input, *|
+    assert_field count: 1 do |input|
       messages = JSON.parse(input["data-validation-messages"])
 
-      assert messages["badInput"] = "is invalid"
-      assert messages["valueMissing"] = "can't be blank"
+      assert_equal "is invalid", messages["badInput"]
+      assert_equal "can't be blank", messages["valueMissing"]
     end
   end
 
@@ -55,7 +54,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "select[data-validation-messages]", count: 1 do |select, *|
+    assert_element "select", "data-validation-messages": true, count: 1 do |select|
       messages = JSON.parse(select["data-validation-messages"])
 
       assert_equal "is invalid", messages["badInput"]
@@ -70,7 +69,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[data-validation-messages]", count: 0
+    assert_element "input", "input[data-validation-messages]": false, count: 1
   end
 
   test "#render omits aria-describedby when the field is valid" do
@@ -81,8 +80,8 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[aria-describedby]", count: 0
-    assert_select "span[id=?]", "#{@object_name}_content_validation_message", count: 1
+    assert_element "input", "aria-describedby": false, count: 1
+    assert_element "span", id: "#{@object_name}_content_validation_message", count: 1
   end
 
   test "#render omits aria-describedby when the field is [type=hidden]" do
@@ -92,7 +91,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[type=?][aria-describedby]", "hidden", count: 0
+    assert_element "input", type: "hidden", visible: false, "aria-describedby": false, count: 1
   end
 
   test "#render encodes aria-describedby reference to the validation message element when the text field is invalid" do
@@ -105,8 +104,10 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[aria-describedby~=?]", "#{@object_name}_content_validation_message", count: 1
-    assert_select "span[id=?]", "#{@object_name}_content_validation_message", count: 1
+    assert_element "input", "aria-describedby": "#{@object_name}_content_validation_message", count: 1 do |input|
+      assert_matches_selector input, :field, described_by: "can't be blank"
+    end
+    assert_element "span", id: "#{@object_name}_content_validation_message", count: 1
   end
 
   test "#render encodes aria-describedby reference to the validation message element when the select field is invalid" do
@@ -119,8 +120,10 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "select[aria-describedby~=?]", "#{@object_name}_published_validation_message", count: 1
-    assert_select "span[id=?]", "#{@object_name}_published_validation_message", count: 1
+    assert_element "select", "aria-describedby": "#{@object_name}_published_validation_message" do |select|
+      assert_matches_selector select, :select, described_by: "can't be blank"
+    end
+    assert_element "span", id: "#{@object_name}_published_validation_message", count: 1
   end
 
   test "#render prepends to existing aria-describedby values when the field is invalid" do
@@ -134,8 +137,10 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[aria-describedby~=?]", "#{@object_name}_content_validation_message", count: 1
-    assert_select "input[aria-describedby~=?]", "other_description", count: 1
+    assert_element "input", "aria-describedby": "#{@object_name}_content_validation_message other_description", count: 1 do |input|
+      assert_matches_selector input, :field, described_by: "can't be blank"
+      assert_matches_selector input, :field, described_by: "Optional"
+    end
   end
 
   test "#render encodes aria-errormessage reference into text field with form builder namespace" do
@@ -146,8 +151,8 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[aria-errormessage~=?]", "namespace_#{@object_name}_content_validation_message", count: 1
-    assert_select "span[id=?]", "namespace_#{@object_name}_content_validation_message", count: 1
+    assert_element "input", "aria-errormessage": "namespace_#{@object_name}_content_validation_message", count: 1
+    assert_element "span", id: "namespace_#{@object_name}_content_validation_message", count: 1
   end
 
   test "#render encodes aria-errormessage reference into select with form builder namespace" do
@@ -158,8 +163,8 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "select[aria-errormessage~=?]", "namespace_#{@object_name}_published_validation_message", count: 1
-    assert_select "span[id=?]", "namespace_#{@object_name}_published_validation_message", count: 1
+    assert_element "select", "aria-errormessage": "namespace_#{@object_name}_published_validation_message", count: 1
+    assert_element "span", id: "namespace_#{@object_name}_published_validation_message", count: 1
   end
 
   test "#render omits aria-errormessage from [type=hidden]" do
@@ -169,7 +174,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[type=?][aria-errormessage]", "hidden", count: 0
+    assert_element "input", type: "hidden", "aria-errormessage": false, visible: false, count: 1
   end
 
   test "#render encodes aria-errormessage reference to the validation message element when the field is valid" do
@@ -180,7 +185,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[aria-errormessage~=?]", "#{@object_name}_content_validation_message", count: 1
+    assert_element "input", "aria-errormessage": "#{@object_name}_content_validation_message", count: 1
   end
 
   test "#render encodes aria-errormessage reference to the validation message element when the field is invalid" do
@@ -193,8 +198,8 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[aria-errormessage~=?]", "#{@object_name}_content_validation_message", count: 1
-    assert_select "span[id=?]", "#{@object_name}_content_validation_message", count: 1
+    assert_element "input", "aria-errormessage": "#{@object_name}_content_validation_message", count: 1
+    assert_element "span", id: "#{@object_name}_content_validation_message", count: 1
   end
 
   test "#render encodes aria-errormessage reference with a nested form builder" do
@@ -207,8 +212,8 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[aria-errormessage~=?]", "#{@object_name}_nested_1_content_validation_message", count: 1
-    assert_select "span[id=?]", "#{@object_name}_nested_1_content_validation_message", count: 1
+    assert_element "input", "aria-errormessage": "#{@object_name}_nested_1_content_validation_message", count: 1
+    assert_element "span", id: "#{@object_name}_nested_1_content_validation_message", count: 1
   end
 
   test "#render encodes aria-errormessage reference with a nested form builder's parent's namespace" do
@@ -221,8 +226,8 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[aria-errormessage~=?]", "namespace_#{@object_name}_nested_1_content_validation_message", count: 1
-    assert_select "span[id=?]", "namespace_#{@object_name}_nested_1_content_validation_message", count: 1
+    assert_element "input", "aria-errormessage": "namespace_#{@object_name}_nested_1_content_validation_message", count: 1
+    assert_element "span", id: "namespace_#{@object_name}_nested_1_content_validation_message", count: 1
   end
 
   test "#render sets aria-invalid on the text field when the instance is invalid" do
@@ -234,7 +239,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[type=?][aria-invalid=?]", "text", "true", count: 1
+    assert_element "input", type: "text", "aria-invalid": "true", count: 1
   end
 
   test "#render sets aria-invalid on the select when the instance is invalid" do
@@ -246,7 +251,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "select[required][aria-invalid=?]", "true", count: 1
+    assert_element "select", required: true, "aria-invalid": "true", count: 1
   end
 
   test "#render does not override [required] on the select" do
@@ -258,8 +263,8 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "select:not([required])", count: 1
-    assert_select "select[required]", count: 0
+    assert_element "select", required: false, count: 1
+    assert_no_element "select", required: true
   end
 
   test "#render omits aria-invalid when the [type=hidden]" do
@@ -271,7 +276,7 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[type=?][aria-invalid]", "hidden", count: 0
+    assert_element "input", type: "hidden", "aria-invalid": false, visible: false, count: 1
   end
 
   test "#render sets aria-invalid when the checkbox is checked and the field is invalid" do
@@ -283,6 +288,8 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
-    assert_select "input[checked][type=?][aria-invalid=?]", "checkbox", "true", count: 1
+    assert_checked_field type: "checkbox", count: 1 do |input|
+      assert_matches_selector input, :element, "aria-invalid": "true"
+    end
   end
 end

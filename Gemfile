@@ -19,7 +19,7 @@ gem "rails", rails_constraint
 gem "sprockets-rails"
 
 group :test do
-  gem "capybara", '>= 3.26'
+  gem "capybara", ">= 3.26", require: "capybara/minitest"
   gem "capybara_accessible_selectors", github: "citizensadvice/capybara_accessible_selectors", tag: "v0.4.1"
   gem "rexml"
   gem "selenium-webdriver"
