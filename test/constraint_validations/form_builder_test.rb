@@ -3,9 +3,8 @@ require "test_helper"
 class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
   Message = Class.new do
     include ActiveModel::Model
-    include ActiveModel::Attributes
 
-    attribute :content
+    attr_accessor :content
 
     validates :content, presence: true
   end

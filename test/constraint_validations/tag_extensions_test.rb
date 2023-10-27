@@ -5,10 +5,8 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
 
   Message = Class.new do
     include ActiveModel::Model
-    include ActiveModel::Attributes
 
-    attribute :content
-    attribute :published, :boolean
+    attr_accessor :content, :published
 
     validates :content, presence: true, length: {maximum: 100}
     validates :published, presence: true, exclusion: {in: [true]}
