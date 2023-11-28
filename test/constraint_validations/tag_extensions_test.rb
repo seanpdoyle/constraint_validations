@@ -54,11 +54,81 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
       <% end %>
     ERB
 
+    assert_select options: ["", "true", "false"], count: 1 do |select|
+      messages = JSON.parse(select["data-validation-messages"])
+
+      assert_equal "is invalid", messages["badInput"]
+      assert_equal "can't be blank", messages["valueMissing"]
+    end
+  end
+
+  test "#render encodes Active Model validation message translations into select elements rendered with collection_select" do
+    render locals: {message: Message.new}, inline: <<~ERB
+      <%= fields model: message do |form| %>
+        <%= form.collection_select :content, [true, false], :to_s, :to_s, {prompt: true} %>
+      <% end %>
+    ERB
+
+    assert_select options: ["Please select", "true", "false"], count: 1 do |select|
+      messages = JSON.parse(select["data-validation-messages"])
+
+      assert_equal "is invalid", messages["badInput"]
+      assert_equal "can't be blank", messages["valueMissing"]
+    end
+  end
+
+  test "#render encodes Active Model validation message translations into select elements rendered with grouped_collection_select" do
+    values = [
+      OpenStruct.new(id: "africa", name: "Africa", countries: [
+        OpenStruct.new(id: "egypt", name: "Egypt"),
+      ]),
+      OpenStruct.new(id: "europe", name: "Eurpoe", countries: [
+        OpenStruct.new(id: "england", name: "England"),
+      ])
+    ]
+    render locals: {message: Message.new, values: values}, inline: <<~ERB
+      <%= fields model: message do |form| %>
+        <%= form.grouped_collection_select :content, values, :countries, :name, :id, :name, {prompt: true} %>
+      <% end %>
+    ERB
+
+    assert_select options: ["Please select", "Egypt", "England"], count: 1 do |select|
+      messages = JSON.parse(select["data-validation-messages"])
+
+      assert_equal "is invalid", messages["badInput"]
+      assert_equal "can't be blank", messages["valueMissing"]
+    end
+  end
+
+  test "#render encodes Active Model validation message translations into select elements rendered with time_zone_select" do
+    render locals: {message: Message.new}, inline: <<~ERB
+      <%= fields model: message do |form| %>
+        <%= form.time_zone_select(:content, /United States/) %>
+      <% end %>
+    ERB
+
     assert_element "select", "data-validation-messages": true, count: 1 do |select|
       messages = JSON.parse(select["data-validation-messages"])
 
       assert_equal "is invalid", messages["badInput"]
       assert_equal "can't be blank", messages["valueMissing"]
+    end
+  end
+
+  if defined? ::ActionView::Helpers::Tags::WeekdaySelect
+    test "#render encodes Active Model validation message translations into select elements rendered with weekday_select" do
+      render locals: {message: Message.new}, inline: <<~ERB
+        <%= fields model: message do |form| %>
+          <%= form.weekday_select(:content) %>
+        <% end %>
+      ERB
+
+      assert_element "select", "data-validation-messages": true, count: 1 do |select|
+        messages = JSON.parse(select["data-validation-messages"])
+
+        assert_equal "is invalid", messages["badInput"]
+        assert_equal "can't be blank", messages["valueMissing"]
+      end
     end
   end
 
@@ -290,6 +360,23 @@ class ConstraintValidations::AriaTagExtensionsTest < ConstraintValidations::Test
 
     assert_checked_field type: "checkbox", count: 1 do |input|
       assert_matches_selector input, :element, "aria-invalid": "true"
+    end
+  end
+
+  test "#render sets aria-describedby for the collection checkboxes" do
+    message = Message.new(published: true).tap(&:validate)
+
+    render locals: {message: message}, inline: <<~ERB
+      <%= fields model: message do |form| %>
+        <%= form.collection_check_boxes :published, [[true, "Published"], [false, "Draft"]], :first, :second %>
+      <% end %>
+    ERB
+
+    assert_checked_field "Published", type: "checkbox", with: "true", count: 1 do |input|
+      assert_matches_selector input, :element, "aria-describedby": true
+    end
+    assert_unchecked_field "Draft", type: "checkbox", count: 1, with: "false" do |input|
+      assert_matches_selector input, :element, "aria-describedby": true
     end
   end
 end
