@@ -97,7 +97,11 @@ module ConstraintValidations
         ::ActionView::Helpers::Tags::Select,
         ::ActionView::Helpers::Tags::TextField,
         ::ActionView::Helpers::Tags::TextArea,
-      ].each do |klass|
+        ::ActionView::Helpers::Tags::CollectionSelect,
+        ::ActionView::Helpers::Tags::GroupedCollectionSelect,
+        ::ActionView::Helpers::Tags::TimeZoneSelect,
+        (::ActionView::Helpers::Tags::WeekdaySelect if defined?(::ActionView::Helpers::Tags::WeekdaySelect))
+      ].compact.each do |klass|
         klass.prepend AriaTagsExtension
         klass.prepend ValidationMessageExtension
       end

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Add support for Collection `<select>` helpers
+
+    *Sean Doyle*
+
 *   Merge attributes into `@html_options` when available (for example, building
     `<select>` elements)
 
