@@ -8,6 +8,47 @@
 
     <%= stylesheet_link_tag 'application', media: 'all' %>
     <%= javascript_include_tag 'application' %>
+
+    <% case ENV.fetch("HOTWIRE_ENABLED", params[:hotwire_enabled])
+       when "1", /true/i %>
+      <script type="module">
+        import "https://unpkg.com/@hotwired/turbo-rails@7.1.2/app/assets/javascripts/turbo.js"
+        import { Application, Controller } from "https://unpkg.com/@hotwired/stimulus@3.2.2/dist/stimulus.js"
+
+        const application = Application.start()
+
+        application.register("constraint-validations", class extends Controller {
+          static values = { options: Object }
+
+          initialize() {
+            this.validations = new ConstraintValidations(this.element, this.optionsValue)
+          }
+
+          connect() {
+            this.validations.connect()
+          }
+
+          disconnect() {
+            this.validations.disconnect()
+          }
+        })
+      </script>
+    <% else %>
+      <script>
+        addEventListener("DOMContentLoaded", () => {
+          <% case params[:disableSubmitWhenInvalid]
+             when "0", /false/i %>
+          const disableSubmitWhenInvalid = false
+          <% when "1", /true/i %>
+          const disableSubmitWhenInvalid = true
+          <% else %>
+          const disableSubmitWhenInvalid = (element) => true
+          <% end %>
+
+          ConstraintValidations.connect(document, { disableSubmitWhenInvalid })
+        })
+      </script>
+    <% end %>
   </head>
 
   <body>

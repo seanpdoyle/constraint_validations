@@ -8,6 +8,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        hotwire-enabled:
+          - true
+          - false
         ruby-version:
           - "2.7"
           - "3.0"
@@ -26,7 +29,7 @@ jobs:
       RAILS_VERSION: "${{ matrix.rails-version }}"
       SELENIUM_BROWSER: "${{ matrix.selenium-browser }}"
 
-    name: ${{ format('Tests (Ruby {0}, Rails {1}, Browser {2})', matrix.ruby-version, matrix.rails-version, matrix.selenium-browser) }}
+    name: ${{ format('Tests (Ruby {0}, Rails {1}, Browser {2}, Hotwire {3})', matrix.ruby-version, matrix.rails-version, matrix.selenium-browser, matrix.hotwire-enabled) }}
     runs-on: "ubuntu-latest"
 
     steps:
