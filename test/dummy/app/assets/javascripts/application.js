@@ -13,7 +13,3 @@
 //= require constraint_validations
 //= require_tree .
 //= require_self
-
-addEventListener("DOMContentLoaded", () => {
-  ConstraintValidations.connect(document, { disableSubmitWhenInvalid: (element) => true })
-})

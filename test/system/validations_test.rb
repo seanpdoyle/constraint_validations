@@ -57,7 +57,7 @@ class ValidationsTest < ApplicationSystemTestCase
   end
 
   test "disables the submit button when invalid" do
-    visit new_message_path
+    visit new_message_path(disableSubmitWhenInvalid: true)
 
     within_fieldset "Validate" do
       assert_button "Create Message", disabled: false
