@@ -36,16 +36,22 @@
     <% else %>
       <script>
         addEventListener("DOMContentLoaded", () => {
+          const options = {}
+
           <% case params[:disableSubmitWhenInvalid]
              when "0", /false/i %>
-          const disableSubmitWhenInvalid = false
+          options.disableSubmitWhenInvalid = false
           <% when "1", /true/i %>
-          const disableSubmitWhenInvalid = true
+          options.disableSubmitWhenInvalid = true
           <% else %>
-          const disableSubmitWhenInvalid = (element) => true
+          options.disableSubmitWhenInvalid = (element) => true
           <% end %>
 
-          ConstraintValidations.connect(document, { disableSubmitWhenInvalid })
+          <% if params[:validateOn] %>
+          options.validateOn = <%= params[:validateOn].to_json.html_safe %>
+          <% end %>
+
+          ConstraintValidations.connect(document, options)
         })
       </script>
     <% end %>

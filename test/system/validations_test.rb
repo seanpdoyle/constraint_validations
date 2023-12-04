@@ -16,6 +16,58 @@ class ValidationsTest < ApplicationSystemTestCase
     end
   end
 
+  test "validates fields on input and blur by default" do
+    visit new_message_path
+
+    within_fieldset "Validate" do
+      tab_until_focused :field, "Subject"
+
+      assert_field "Subject", focused: true, valid: false
+
+      send_keys :tab
+
+      assert_field "Subject", focused: false, valid: false, described_by: "can't be blank"
+
+      send_keys [:shift, :tab]
+
+      assert_field "Subject", focused: true, valid: false, described_by: "can't be blank"
+
+      send_keys "valid"
+
+      assert_field "Subject", focused: true, valid: true
+
+      send_keys :tab
+
+      assert_field "Subject", focused: false, valid: true
+    end
+  end
+
+  test "configures which events to validate after" do
+    visit new_message_path(validateOn: ["blur"])
+
+    within_fieldset "Validate" do
+      tab_until_focused :field, "Subject"
+
+      assert_field "Subject", focused: true, valid: false
+
+      send_keys :tab
+
+      assert_field "Subject", focused: false, valid: false, described_by: "can't be blank"
+
+      send_keys [:shift, :tab]
+
+      assert_field "Subject", focused: true, valid: false, described_by: "can't be blank"
+
+      send_keys "valid"
+
+      assert_field "Subject", focused: true, valid: false, described_by: "can't be blank"
+
+      send_keys :tab
+
+      assert_field "Subject", focused: false, valid: true
+    end
+  end
+
   test "validates fields on the server" do
     visit new_message_path(disableSubmitWhenInvalid: true)
 
