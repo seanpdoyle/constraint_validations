@@ -52,6 +52,10 @@
   </head>
 
   <body>
+    <% if flash.notice %>
+      <div role="alert"><%= flash.notice %></div>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>

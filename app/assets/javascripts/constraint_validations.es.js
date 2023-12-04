@@ -22,7 +22,11 @@ class ConstraintValidations {
 
     this.element.addEventListener("input", this.toggleSubmitsDisabled);
 
-    this.reportValidationMessages();
+    this.reportValidationMessages(
+      this.element instanceof HTMLFormElement ?
+        [this.element] :
+        Array.from(this.element.querySelectorAll("form"))
+    );
   }
 
   disconnect() {
@@ -56,15 +60,32 @@ class ConstraintValidations {
     }
   }
 
-  reportValidationMessages() {
-    for (const invalidElement of this.element.querySelectorAll("[aria-errormessage]")) {
-      const id = invalidElement.getAttribute("aria-errormessage");
-      const validationMessage = document.getElementById(id);
+  reportValidationMessages(forms) {
+    const invalidFields = [];
 
-      if (validationMessage) {
-        invalidElement.setCustomValidity(validationMessage.textContent);
+    for (const form of forms) {
+      for (const element of Array.from(form.elements).filter(isFieldElement)) {
+        const serverRenderedInvalid = /true/i.test(element.getAttribute("aria-invalid"));
+        const id = element.getAttribute("aria-errormessage");
+        const errorMessageElement = document.getElementById(id);
+        const validationMessage = errorMessageElement?.textContent;
+
+        if (serverRenderedInvalid && this.reportValidity(element)) {
+          invalidFields.push(element);
+        }
+
+        if (validationMessage) {
+          element.setCustomValidity(validationMessage);
+        }
+
+        if (this.willDisableSubmitWhenInvalid(element)) {
+          disableSubmitWhenInvalid(form);
+        }
       }
     }
+
+    const [firstInvalidField] = invalidFields;
+    firstInvalidField?.focus();
   }
 
   willDisableSubmitWhenInvalid(target) {
@@ -137,7 +158,7 @@ function disableSubmitWhenInvalid(form) {
   const isValid = Array.from(form.elements).filter(isFieldElement).every(input => input.validity.valid);
 
   for (const element of form.elements) {
-    if (element.type == "submit") {
+    if (element.type == "submit" && !element.formNoValidate) {
       element.disabled = !isValid;
     }
   }

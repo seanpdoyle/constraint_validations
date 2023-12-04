@@ -7,7 +7,7 @@ class MessagesController < ApplicationController
     message = Message.new(message_params)
 
     if message.valid?
-      redirect_to new_message_url(redirect_params)
+      redirect_to new_message_url(redirect_params), notice: "Message Created."
     else
       render :new, locals: {message: message}, status: :unprocessable_entity
     end
