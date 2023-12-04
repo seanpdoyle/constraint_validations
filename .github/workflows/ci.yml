@@ -18,11 +18,15 @@ jobs:
           - "7.0"
           - "6.1"
           - "main"
+        selenium-browser:
+          - "headless_chrome"
+          - "headless_firefox"
 
     env:
       RAILS_VERSION: "${{ matrix.rails-version }}"
+      SELENIUM_BROWSER: "${{ matrix.selenium-browser }}"
 
-    name: ${{ format('Tests (Ruby {0}, Rails {1})', matrix.ruby-version, matrix.rails-version) }}
+    name: ${{ format('Tests (Ruby {0}, Rails {1}, Browser {2})', matrix.ruby-version, matrix.rails-version, matrix.selenium-browser) }}
     runs-on: "ubuntu-latest"
 
     steps:
