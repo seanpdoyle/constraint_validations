@@ -321,21 +321,30 @@ ConstraintValidations.connect(element, { validatesOn: eventNames })
 
 ### Disabling submit buttons when invalid
 
+The value of `disableSubmitWhenInvalid:` can be a boolean, or a function that
+accepts an Element (e.g. `document`, or a reference to an `HTMLFormElement`
+instance) and returns a boolean. By default, `{ disableSubmitWhenInvalid: false }`.
+
 To disable a `<form>` element's `[type="submit]` elements, pass along a
 `disableSubmitWhenInvalid:` option to either the `ConstraintValidations`
 constructor, or to the `ConstraintValidations.connect` static method:
 
 ```js
-const element = ...
+// configure with the constructor
+const validations = new ConstraintValidations(element, {
+  disableSubmitWhenInvalid: true
+})
 
-new ConstraintValidations(element, { disableSubmitWhenInvalid: true })
+// configure with the static helper method
+ConstraintValidations.connect(element, {
+  disableSubmitWhenInvalid: true
+})
 
-ConstraintValidations.connect(element, { disableSubmitWhenInvalid: true })
+// configure with a function that accepts a form field element
+ConstraintValidations.connect(element, {
+  disableSubmitWhenInvalid: (field) => field.type == "checkbox"
+})
 ```
-
-The value of `disableSubmitWhenInvalid:` can be a boolean, or a function that
-accepts an Element (e.g. `document`, or a reference to an `HTMLFormElement`
-instance) and returns a boolean.
 
 [DOMContentLoaded]: https://developer.mozilla.org/en-US/docs/Web/API/Window/DOMContentLoaded_event
 [Turbo]: https://turbo.hotwire.dev

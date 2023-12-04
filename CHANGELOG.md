@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Focus the first `[aria-invalid]` form control managed by
+    `ConstraintValidations` on initial page load.
+
+*   Disable submit button when `disableSubmitWhenInvalid: true` and the initial
+    server-rendered `<form>` element has invalid fields
+
+    *Sean Doyle*
+
+*   Do not disable a submit button with `[formnovalidate]` as part of handling
+    `disableSubmitWhenInvalid: true` configuration
+
+    *Sean Doyle*
+
 ## 0.1.0 - 2023-12-04
 
 *   Add support for Collection `<select>` helpers
