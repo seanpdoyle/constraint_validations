@@ -67,11 +67,12 @@ var ConstraintValidations = function() {
           const id = element.getAttribute("aria-errormessage");
           const errorMessageElement = document.getElementById(id);
           const validationMessage = errorMessageElement?.textContent;
-          if (serverRenderedInvalid && this.reportValidity(element)) {
-            invalidFields.push(element);
-          }
           if (validationMessage) {
             element.setCustomValidity(validationMessage);
+          }
+          if (validationMessage || serverRenderedInvalid) {
+            this.reportValidity(element);
+            invalidFields.push(element);
           }
           if (this.willDisableSubmitWhenInvalid(element)) {
             disableSubmitWhenInvalid(form);

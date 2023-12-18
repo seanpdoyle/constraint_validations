@@ -83,6 +83,18 @@ class ValidationsTest < ApplicationSystemTestCase
     end
   end
 
+  test "presents custom Active Model validations from the server" do
+    visit new_message_path(disableSubmitWhenInvalid: false)
+
+    within_fieldset "Validate" do
+      fill_in "Subject", with: "invalid"
+      click_on "Skip Validations"
+
+      assert_field "Subject", valid: false, validation_message: "cannot equal invalid", described_by: "cannot equal invalid"
+      assert_text "cannot equal invalid"
+    end
+  end
+
   test "focuses first invalid field when connected with multiple invalid fields" do
     visit new_message_path(disableSubmitWhenInvalid: false)
 

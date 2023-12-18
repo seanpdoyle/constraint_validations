@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Render server-generated custom validation messages during initial error
+    reporting
+
+    *Sean Doyle*
+
 *   Focus the first `[aria-invalid]` form control managed by
     `ConstraintValidations` on initial page load.
 
