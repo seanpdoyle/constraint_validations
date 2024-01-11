@@ -151,6 +151,7 @@ function focusFirstInvalidField(element) {
   }
 
   firstInvalidField?.focus();
+  firstInvalidField?.scrollIntoView();
 }
 
 function disableSubmitWhenInvalid(form) {

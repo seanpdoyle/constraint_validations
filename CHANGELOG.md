@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Pair calls to [HTMLElement.focus][] with [Element.scrollIntoView][] to
+    work-around iOS Safari quirks
+
+    *Sean Doyle*
+
+[HTMLElement.focus]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus
+[Element.scrollIntoView]: https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView
+
 *   Remove `ruby@2.7`-`rails@main` and `ruby@3.0`-`rails@main` pairings from CI
     matrix
 
