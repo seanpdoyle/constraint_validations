@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Remove `ruby@2.7`-`rails@main` and `ruby@3.0`-`rails@main` pairings from CI
+    matrix
+
+    *Sean Doyle*
+
 *   Render server-generated custom validation messages during initial error
     reporting
 
