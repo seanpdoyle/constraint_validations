@@ -24,6 +24,11 @@ jobs:
         selenium-browser:
           - "headless_chrome"
           - "headless_firefox"
+        exclude:
+          - ruby-version: "2.7"
+            rails-version: "main"
+          - ruby-version: "3.0"
+            rails-version: "main"
 
     env:
       RAILS_VERSION: "${{ matrix.rails-version }}"
