@@ -131,6 +131,7 @@ var ConstraintValidations = function() {
       firstInvalidField = element;
     }
     firstInvalidField?.focus();
+    firstInvalidField?.scrollIntoView();
   }
   function disableSubmitWhenInvalid(form) {
     if (!form || form.noValidate) return;
