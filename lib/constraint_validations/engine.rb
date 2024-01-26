@@ -50,7 +50,7 @@ module ConstraintValidations
 
     module ValidationMessageExtension
       def render
-        index = @options.fetch(:index, @auto_index)
+        index = @options.fetch("index") { @options.fetch(:index, @auto_index) }
         validation_message_id = FormBuilder.validation_message_id(@template_object, @object_name, @method_name, index: index, namespace: @options[:namespace])
 
         attributes = @options

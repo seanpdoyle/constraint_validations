@@ -76,6 +76,23 @@ class ConstraintValidations::FormBuilderTest < ConstraintValidations::TestCase
     assert_element "span", id: "namespace_#{@object_name}_content_validation_message", text: "can't be blank", count: 1
   end
 
+  test "#validation_message incorporates :index into deep nesting" do
+    message = Message.new.tap(&:validate)
+
+    render locals: {message: message}, inline: <<~ERB
+      <%= fields model: message do |form| %>
+        <%= form.fields model: message, index: 1, namespace: "child" do |child_form| %>
+          <%= child_form.fields model: message, index: 0, namespace: "grandchild" do |grandchild_form| %>
+            <%= grandchild_form.number_field :content %>
+            <%= grandchild_form.validation_message :content %>
+          <% end %>
+        <% end %>
+      <% end %>
+    ERB
+
+    assert_field described_by: "can't be blank"
+  end
+
   test "#validation_message renders messages using the nested form's message template" do
     message = Message.new.tap(&:validate)
 
