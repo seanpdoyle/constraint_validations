@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Resolve issue where `:index` was ignored for multiply-nested forms
+
+    *Sean Doyle*
+
 *   Pair calls to [HTMLElement.focus][] with [Element.scrollIntoView][] to
     work-around iOS Safari quirks
 
