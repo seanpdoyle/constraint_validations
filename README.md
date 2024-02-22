@@ -356,6 +356,98 @@ ConstraintValidations.connect(element, {
 [disconnect()]: https://stimulus.hotwire.dev/reference/lifecycle-callbacks#disconnection
 [novalidate]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form#attr-novalidate
 
+### Experimental: Validating `input[type="checkbox"][required]` as a group
+
+While [`<input type="checkbox">` elements *do* support built-in Constraint
+Validations][input#client-side_validation] like [ValidityState.valueMissing][],
+most of the [`ValidityState` properties will always be
+`false`][checkbox#validation]. The Constraint Validations API determines the
+form control's `ValidityState.valueMissing` property from its [required][]
+attribute.
+
+When a form requires that a *single* `<input type="checkbox">` choice (like an
+acknowledgement of terms) is [checked][], the built-in support works well
+enough. When a form requires that _at least one_ checkbox in a *group* of
+checkboxes is `checked`, the built-in support can be more strict than expected.
+For example, if there were multiple `<input type="checkbox">` elements with the
+same `[name]` attribute, and each element had the `[required]` attribute, they
+would *all need to be checked* to be considered valid.
+
+`ConstraintValidations`-powered validations support an experimental `checkbox:`
+validator option to validate `<input type="checkbox">` elements that share the
+same `[name]` attribute as a group. To opt-into support, configure the
+`ConstraintValidations` instance:
+
+```js
+// configure with the constructor
+const validations = new ConstraintValidations(element, {
+  validators: {
+    checkbox: true
+  }
+})
+
+// configure with the static helper method
+ConstraintValidations.connect(element, {
+  validators: {
+    checkbox: true
+  }
+})
+
+// configure with a function that accepts a form field element
+ConstraintValidations.connect(element, {
+  validators: {
+    checkbox: (fields) => fields.some(field => field.name === "special[field]")
+  }
+})
+```
+
+Then, render a group of `<input type="checkbox">` elements as `[required]`:
+
+```erb
+<fieldset>
+  <legend>Multiple [required] checkboxes</legend>
+
+  <%= form.validation_message :multiple_required_checkboxes %>
+
+  <%= form.collection_check_boxes :multiple_required_checkboxes, [
+        ["1", "Multiple required checkbox #1"],
+        ["2", "Multiple required checkbox #2"]
+      ], :first, :second do |builder| %>
+    <%= builder.check_box required: true %>
+    <%= builder.label %>
+  <% end %>
+</fieldset>
+```
+
+#### How it works
+
+To work-around the quirks of built-in support, `ConstraintValidations` monitors
+when `<input type="checkbox" required>` elements are connected to the document.
+
+Once connected, `ConstraintValidations` removes their `[required]` attribute,
+then replaces it with an `[aria-required="true"]` attribute instead. During
+form control validation, it utilizes the `[aria-required="true"]` attributes to
+determine whether or not the collective group meets the
+`ValidityState.valueMissing` criteria.
+
+This technique integrates with other built-in mechanisms like:
+
+* matching the `[aria-invalid="true"]` CSS selector
+* matching the [:valid](https://developer.mozilla.org/en-US/docs/Web/CSS/:invalid) CSS selector when valid
+* matching the [:user-valid](https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid) when valid
+* matching the [:user-invalid](https://developer.mozilla.org/en-US/docs/Web/CSS/:user-invalid) when invalid
+
+However, its deviates from other built-in mechanism. For example:
+
+* checkboxes will not match the [:required](https://developer.mozilla.org/en-US/docs/Web/CSS/:required) CSS selector
+* checkboxes will always match the [:optional](https://developer.mozilla.org/en-US/docs/Web/CSS/:optional) CSS selector
+
+[input#client-side_validation]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#client-side_validation
+[ValidityState.valueMissing]: https://developer.mozilla.org/en-US/docs/Web/API/ValidityState/valueMissing
+[checkbox#validation]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#validation
+[required]: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/required
+[checked]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement#instance_properties_that_apply_only_to_elements_of_type_checkbox_or_radio
+
 ## Testing it out locally
 
 To test this out on your own, clone the repository and execute:

@@ -1,0 +1,54 @@
+<%= form_with model: @form, url: forms_path, data: {
+      controller: "constraint-validations",
+      constraint_validations_options_value: {
+        validators: {
+          checkbox: params[:checkbox] == "true"
+        }
+      }
+    } do |form| %>
+  <%= hidden_field_tag :hotwire_enabled, params[:hotwire_enabled] %>
+  <%= hidden_field_tag :checkbox, params[:checkbox] %>
+
+  <fieldset>
+    <legend>Single optional checkbox</legend>
+
+    <%= form.check_box :single_optional_checkbox, value: true %>
+    <%= form.label :single_optional_checkbox %>
+  </fieldset>
+
+  <fieldset>
+    <legend>Single [required] checkbox</legend>
+
+    <%= form.check_box :single_required_checkbox, value: true %>
+    <%= form.label :single_required_checkbox %>
+    <%= form.validation_message :single_required_checkbox %>
+  </fieldset>
+
+  <fieldset>
+    <legend>Multiple optional checkboxes</legend>
+
+    <%= form.collection_check_boxes :multiple_optional_checkbox, [
+          ["1", "Multiple optional checkbox #1"],
+          ["2", "Multiple optional checkbox #2"]
+        ], :first, :second do |builder| %>
+      <%= builder.check_box %>
+      <%= builder.label %>
+    <% end %>
+  </fieldset>
+
+  <fieldset>
+    <legend>Multiple [required] checkboxes</legend>
+
+    <%= form.validation_message :multiple_required_checkbox %>
+
+    <%= form.collection_check_boxes :multiple_required_checkbox, [
+          ["1", "Multiple required checkbox #1"],
+          ["2", "Multiple required checkbox #2"]
+        ], :first, :second do |builder| %>
+      <%= builder.check_box %>
+      <%= builder.label %>
+    <% end %>
+  </fieldset>
+
+  <button formnovalidate>Skip Validations</button>
+<% end %>

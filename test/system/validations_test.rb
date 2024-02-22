@@ -197,6 +197,122 @@ class ValidationsTest < ApplicationSystemTestCase
 
     assert_selector :alert, text: "Message Created."
   end
+
+  test "checkbox with single [required] checkbox requires it to be checked" do
+    visit new_form_path
+
+    tab_until_focused :field, "Single required checkbox"
+
+    assert_unchecked_field "Single optional checkbox", valid: true
+    assert_unchecked_field "Single required checkbox", valid: false do |input|
+      input.assert_matches_selector :element, required: true, "aria-required": false
+    end
+
+    send_keys :tab
+
+    assert_unchecked_field "Single optional checkbox", valid: true
+    assert_unchecked_field "Single required checkbox", valid: false, validation_message: "can't be blank", described_by: "can't be blank"
+
+    check "Single required checkbox"
+
+    assert_unchecked_field "Single optional checkbox", valid: true
+    assert_checked_field "Single required checkbox", valid: true
+    within_fieldset "Single [required] checkbox" do
+      assert_no_text "can't be blank"
+    end
+
+    uncheck "Single required checkbox"
+
+    assert_unchecked_field "Single optional checkbox", valid: true
+    assert_unchecked_field "Single required checkbox", valid: false, validation_message: "can't be blank", described_by: "can't be blank"
+
+    check "Single required checkbox"
+
+    assert_unchecked_field "Single optional checkbox", valid: true
+    assert_checked_field "Single required checkbox", valid: true
+    within_fieldset "Single [required] checkbox" do
+      assert_no_text "can't be blank"
+    end
+  end
+
+  test "checkbox with multiple [required] checkbox requires one to be checked" do
+    visit new_form_path(checkbox: true)
+
+    within_fieldset "Multiple [required] checkboxes" do
+      assert_unchecked_field "Multiple required checkbox", exact: false, valid: false, count: 2 do |input|
+        input.assert_matches_selector :element, required: false, "aria-required": "true"
+      end
+
+      tab_until_focused :field, "Multiple required checkbox #2"
+
+      assert_unchecked_field "Multiple required checkbox", exact: false, valid: false, validation_message: "can't be blank", described_by: "can't be blank", count: 2
+      assert_text "can't be blank", count: 1
+
+      check "Multiple required checkbox #2"
+
+      assert_field "Multiple required checkbox", exact: false, valid: true, count: 2
+      assert_checked_field "Multiple required checkbox #2", valid: true
+      assert_unchecked_field "Multiple required checkbox #1", valid: true
+      assert_no_text "can't be blank"
+
+      check "Multiple required checkbox #1"
+
+      assert_checked_field "Multiple required checkbox #1", valid: true
+      assert_checked_field "Multiple required checkbox #2", valid: true
+      assert_no_text "can't be blank"
+
+      uncheck "Multiple required checkbox #2"
+
+      assert_field "Multiple required checkbox", exact: false, valid: true, count: 2
+      assert_unchecked_field "Multiple required checkbox #2", valid: true
+      assert_checked_field "Multiple required checkbox #1", valid: true
+      assert_no_text "can't be blank"
+
+      uncheck "Multiple required checkbox #1"
+
+      assert_unchecked_field "Multiple required checkbox", exact: false, valid: false, validation_message: "can't be blank", described_by: "can't be blank", count: 2
+      assert_text "can't be blank", count: 1
+
+      check "Multiple required checkbox #2"
+
+      assert_field "Multiple required checkbox", exact: false, valid: true, count: 2
+      assert_checked_field "Multiple required checkbox #2", valid: true
+      assert_unchecked_field "Multiple required checkbox #1", valid: true
+      assert_no_text "can't be blank"
+
+      check "Multiple required checkbox #1"
+
+      assert_checked_field "Multiple required checkbox #1", valid: true
+      assert_checked_field "Multiple required checkbox #2", valid: true
+      assert_no_text "can't be blank"
+    end
+  end
+
+  test "observes connection of multiple [required] checkboxes" do
+    visit new_form_path(hotwire_enabled: true, checkbox: true)
+    click_button "Skip Validations"
+
+    within_fieldset "Multiple [required] checkboxes" do
+      assert_unchecked_field "Multiple required checkbox", exact: false, valid: false, count: 2 do |input|
+        input.assert_matches_selector :element, required: false, "aria-required": "true"
+      end
+    end
+  end
+
+  test "does not group checkboxes without checkbox: true" do
+    visit new_form_path
+
+    within_fieldset "Multiple [required] checkboxes" do
+      assert_unchecked_field "Multiple required checkbox", exact: false, valid: false, count: 2 do |input|
+        input.assert_matches_selector :element, required: true, "aria-required": false
+      end
+
+      check "Multiple required checkbox #1"
+
+      assert_checked_field "Multiple required checkbox #1", valid: true
+      assert_unchecked_field "Multiple required checkbox #2", valid: false
+    end
+  end
 end
 
 class NoValidationsTest < ApplicationSystemTestCase

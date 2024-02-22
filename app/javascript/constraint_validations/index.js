@@ -1,6 +1,12 @@
+import { readValidationMessages } from "./util"
+import CheckboxValidator from "./validators/checkbox_validator"
+
 const defaultOptions = {
   disableSubmitWhenInvalid: false,
   validateOn: ["blur", "input"],
+  validators: {
+    checkbox: false
+  }
 }
 
 export default class ConstraintValidations {
@@ -11,9 +17,13 @@ export default class ConstraintValidations {
   constructor(element = document, options = {}) {
     this.element = element
     this.options = { ...defaultOptions, ...options }
+    this.validators = [
+      new CheckboxValidator(this, this.options.validators.checkbox)
+    ]
   }
 
   connect() {
+    this.validators.forEach(validator => validator.connect())
     this.element.addEventListener("invalid", this.reportFieldValidity, { capture: true, passive: false })
 
     for (const eventName of this.options.validateOn) {
@@ -37,6 +47,7 @@ export default class ConstraintValidations {
     }
 
     this.element.removeEventListener("input", this.toggleSubmitsDisabled)
+    this.validators.forEach(validator => validator.disconnect())
   }
 
   reportFieldValidity = (event) => {
@@ -48,7 +59,11 @@ export default class ConstraintValidations {
   }
 
   clearAndReportFieldValidity = ({ target }) => {
-    if (isFieldElement(target)) {
+    const validator = this.validators.find(validator => validator.willValidate(target))
+
+    if (validator) {
+      validator.validate(target)
+    } else if (isFieldElement(target)) {
       this.clearValidity(target)
       this.reportValidity(target)
     }
@@ -172,14 +187,6 @@ function getValidationMessage(input) {
   const [ _, validationMessage ] = validationMessages.find(([ key ]) => input.validity[key]) || [ null, null ]
 
   return validationMessage || input.validationMessage
-}
-
-function readValidationMessages(input) {
-  try {
-    return JSON.parse(input.getAttribute("data-validation-messages")) || {}
-  } catch(_) {
-    return {}
-  }
 }
 
 function isFieldElement(element) {

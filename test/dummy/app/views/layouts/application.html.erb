@@ -44,7 +44,7 @@
     <% else %>
       <script>
         addEventListener("DOMContentLoaded", () => {
-          const options = {}
+          const options = { validators: {} }
 
           <% case params[:disableSubmitWhenInvalid]
              when "0", /false/i %>
@@ -57,6 +57,15 @@
 
           <% if params[:validateOn] %>
           options.validateOn = <%= params[:validateOn].to_json.html_safe %>
+          <% end %>
+
+          <% case params[:checkbox]
+             when "0", /false/i %>
+          options.validators.checkbox = false
+          <% when "1", /true/i %>
+          options.validators.checkbox = true
+          <% else %>
+          options.validators.checkbox = (group) => false
           <% end %>
 
           ConstraintValidations.connect(document, options)
