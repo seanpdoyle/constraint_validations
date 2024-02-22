@@ -13,3 +13,9 @@
  *= require_tree .
  *= require_self
  */
+
+.field_with_errors label,
+.field_with_errors ~ label,
+:invalid ~ label {
+  color: red;
+}

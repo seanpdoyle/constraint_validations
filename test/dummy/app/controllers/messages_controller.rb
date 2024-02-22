@@ -18,8 +18,4 @@ class MessagesController < ApplicationController
   def message_params
     params.require(:message).permit(:status, :subject, :content)
   end
-
-  def redirect_params
-    params.to_unsafe_h.except(:action, :authenticity_token, :controller, :message)
-  end
 end

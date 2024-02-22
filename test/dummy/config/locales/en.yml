@@ -32,6 +32,8 @@
 en:
   hello: "Hello world"
   errors:
+    forms:
+      blank: "can't be blank"
     messages:
       blank: "can't be blank"
       custom: "cannot equal invalid"
