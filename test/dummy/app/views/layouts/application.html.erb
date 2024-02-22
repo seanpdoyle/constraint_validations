@@ -8,12 +8,20 @@
 
     <%= stylesheet_link_tag 'application', media: 'all' %>
     <%= javascript_include_tag 'application' %>
-
     <% case ENV.fetch("HOTWIRE_ENABLED", params[:hotwire_enabled])
        when "1", /true/i %>
+      <script type="importmap">
+        {
+          "imports": {
+            "@hotwired/turbo-rails": "<%= asset_path("turbo.js") %>",
+            "@hotwired/stimulus": "<%= asset_path("stimulus.js") %>"
+          }
+        }
+      </script>
+
       <script type="module">
-        import "https://unpkg.com/@hotwired/turbo-rails@7.1.2/app/assets/javascripts/turbo.js"
-        import { Application, Controller } from "https://unpkg.com/@hotwired/stimulus@3.2.2/dist/stimulus.js"
+        import "@hotwired/turbo-rails"
+        import { Application, Controller } from "@hotwired/stimulus"
 
         const application = Application.start()
 

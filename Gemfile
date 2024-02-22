@@ -17,6 +17,8 @@ end
 
 gem "rails", rails_constraint
 gem "sprockets-rails"
+gem "turbo-rails"
+gem "stimulus-rails"
 
 group :test do
   gem "capybara", ">= 3.26", require: "capybara/minitest"
