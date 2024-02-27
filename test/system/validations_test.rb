@@ -68,6 +68,17 @@ class ValidationsTest < ApplicationSystemTestCase
     end
   end
 
+  test "ignores disabled fields on the client" do
+    visit new_message_path(disableSubmitWhenInvalid: false)
+
+    within_fieldset "Validate" do
+      click_on "Create Message"
+
+      assert_no_field "Disabled", valid: false, disabled: true
+      assert_field "Status", valid: false, focused: true, validation_message: "can't be blank"
+    end
+  end
+
   test "validates fields on the server" do
     visit new_message_path(disableSubmitWhenInvalid: true)
 
@@ -77,6 +88,7 @@ class ValidationsTest < ApplicationSystemTestCase
       fill_in "Content", with: "not empty"
       click_on "Create Message"
 
+      assert_field "Disabled", valid: true, disabled: true
       assert_field "Subject", valid: false, validation_message: "is reserved", focused: true
       assert_button "Create Message", disabled: true
       assert_button "Skip Validations", disabled: false
@@ -101,6 +113,7 @@ class ValidationsTest < ApplicationSystemTestCase
     within_fieldset "Validate" do
       click_on "Create Message"
 
+      assert_field "Disabled", valid: true, disabled: true
       assert_field "Status", valid: false, focused: true
       assert_field "Subject", valid: false, focused: false
       assert_field "Content", valid: false, focused: false
@@ -113,6 +126,7 @@ class ValidationsTest < ApplicationSystemTestCase
     within_fieldset "Validate" do
       click_on "Skip Validations"
 
+      assert_field "Disabled", valid: true, disabled: true
       assert_field "Status", valid: false, focused: true
       assert_field "Subject", valid: false, focused: false
       assert_field "Content", valid: false, focused: false
@@ -175,6 +189,7 @@ class ValidationsTest < ApplicationSystemTestCase
       fill_in "Subject", with: "valid"
       fill_in "Content", with: "valid"
 
+      assert_no_field valid: false, disabled: true
       assert_no_field valid: false
 
       click_on "Create Message"

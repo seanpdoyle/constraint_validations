@@ -135,23 +135,15 @@ export default class ConstraintValidations {
 }
 
 function focusFirstInvalidField(element) {
-  let firstInvalidField
-
   if (element instanceof HTMLFormElement) {
-    for (const field of element.elements) {
-      if (field.validity.valid) {
-        continue
-      } else {
-        firstInvalidField = field
-        break
-      }
-    }
-  } else if ("validity" in element && !element.validity.valid) {
-    firstInvalidField = element
+    return Array.from(element.elements).some(field => focusFirstInvalidField(field))
+  } else if (isFieldElement(element) && !element.validity.valid) {
+    element.focus()
+    element.scrollIntoView()
+    return true
+  } else {
+    return false
   }
-
-  firstInvalidField?.focus()
-  firstInvalidField?.scrollIntoView()
 }
 
 function disableSubmitWhenInvalid(form) {
@@ -191,5 +183,5 @@ function readValidationMessages(input) {
 }
 
 function isFieldElement(element) {
-  return [ HTMLButtonElement, HTMLInputElement, HTMLObjectElement, HTMLOutputElement, HTMLSelectElement, HTMLTextAreaElement ].some(field => element instanceof field)
+  return !element.disabled && "validity" in element && element.willValidate
 }
