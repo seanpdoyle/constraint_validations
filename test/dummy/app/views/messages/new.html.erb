@@ -12,6 +12,10 @@
   <fieldset>
     <legend>Validate</legend>
 
+    <%= form.label :disabled %>
+    <%= form.text_field :disabled, required: true, disabled: true %>
+    <%= form.validation_message :disabled %>
+
     <% unless params[:skip] %>
       <%= form.validation_message_template do |messages, tag| %>
         <%= tag.span messages.to_sentence, style: "color: red;" %>
