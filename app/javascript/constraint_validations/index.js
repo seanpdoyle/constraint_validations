@@ -35,7 +35,7 @@ export default class ConstraintValidations {
     this.reportValidationMessages(
       this.element instanceof HTMLFormElement ?
         [this.element] :
-        Array.from(this.element.querySelectorAll("form"))
+        this.element.querySelectorAll("form")
     )
   }
 
@@ -59,12 +59,15 @@ export default class ConstraintValidations {
   }
 
   clearAndReportFieldValidity = ({ target }) => {
-    const validator = this.validators.find(validator => validator.willValidate(target))
-
-    if (validator) {
-      validator.validate(target)
-    } else if (isFieldElement(target)) {
+    if (isFieldElement(target)) {
       this.clearValidity(target)
+
+      for (const validator of this.validators) {
+        if (validator.willValidate(target)) {
+          validator.validate(target)
+        }
+      }
+
       this.reportValidity(target)
     }
   }

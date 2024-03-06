@@ -11,6 +11,7 @@ var ConstraintValidations = function() {
     }
   }
   class CheckboxValidator {
+    selector="input[type=checkbox]:required";
     ignoringMutations=false;
     constructor(constraintValidations, predicate) {
       this.constraintValidations = constraintValidations;
@@ -23,16 +24,13 @@ var ConstraintValidations = function() {
         childList: true,
         subtree: true
       });
-      this.overrideNodes(this.element.querySelectorAll("input[type=checkbox][required]"));
+      this.reportValidationMessages(this.element.querySelectorAll(this.selector));
     }
     disconnect() {
       this.mutationObserver.disconnect();
     }
     willValidate(target) {
       return this.willValidateGroup(checkboxGroup(target));
-    }
-    willValidateGroup(group) {
-      return group.length > 0 && this.enabled(group);
     }
     validate(target) {
       const checkboxesInGroup = checkboxGroup(target).filter(isFieldElement);
@@ -60,12 +58,12 @@ var ConstraintValidations = function() {
             target.removeAttribute("aria-required");
           }
         } else if (addedNodes.length) {
-          this.overrideNodes(addedNodes);
+          this.reportValidationMessages(addedNodes);
         }
       }
     };
-    overrideNodes(nodes) {
-      const requiredCheckboxes = querySelectorAllNodes("input[type=checkbox][required]", nodes);
+    reportValidationMessages(nodes) {
+      const requiredCheckboxes = querySelectorAllNodes(this.selector, nodes);
       for (const checkbox of requiredCheckboxes) {
         if (checkbox.required) {
           const group = checkboxGroup(checkbox);
@@ -83,6 +81,9 @@ var ConstraintValidations = function() {
       element.required = false;
       element.setAttribute("aria-required", "true");
       setTimeout((() => this.ignoringMutations = false), 0);
+    }
+    willValidateGroup(group) {
+      return group.length > 0 && this.enabled(group);
     }
     get element() {
       return this.constraintValidations.element;
@@ -148,7 +149,7 @@ var ConstraintValidations = function() {
         });
       }
       this.element.addEventListener("input", this.toggleSubmitsDisabled);
-      this.reportValidationMessages(this.element instanceof HTMLFormElement ? [ this.element ] : Array.from(this.element.querySelectorAll("form")));
+      this.reportValidationMessages(this.element instanceof HTMLFormElement ? [ this.element ] : this.element.querySelectorAll("form"));
     }
     disconnect() {
       this.element.removeEventListener("invalid", this.reportFieldValidity, {
@@ -171,11 +172,13 @@ var ConstraintValidations = function() {
       }
     };
     clearAndReportFieldValidity=({target: target}) => {
-      const validator = this.validators.find((validator => validator.willValidate(target)));
-      if (validator) {
-        validator.validate(target);
-      } else if (isFieldElement(target)) {
+      if (isFieldElement(target)) {
         this.clearValidity(target);
+        for (const validator of this.validators) {
+          if (validator.willValidate(target)) {
+            validator.validate(target);
+          }
+        }
         this.reportValidity(target);
       }
     };

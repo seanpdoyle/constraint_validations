@@ -1,6 +1,7 @@
 import { isFieldElement, readValidationMessages } from "../util"
 
 export default class {
+  selector = "input[type=checkbox]:required"
   ignoringMutations = false
 
   constructor(constraintValidations, predicate) {
@@ -17,7 +18,7 @@ export default class {
       childList: true,
       subtree: true
     })
-    this.overrideNodes(this.element.querySelectorAll("input[type=checkbox][required]"))
+    this.reportValidationMessages(this.element.querySelectorAll(this.selector))
   }
 
   disconnect() {
@@ -26,10 +27,6 @@ export default class {
 
   willValidate(target) {
     return this.willValidateGroup(checkboxGroup(target))
-  }
-
-  willValidateGroup(group) {
-    return group.length > 0 && this.enabled(group)
   }
 
   validate(target) {
@@ -51,6 +48,8 @@ export default class {
     }
   }
 
+  // Private
+
   handleMutation = (mutationRecords) => {
     if (this.ignoringMutations) return
 
@@ -62,13 +61,13 @@ export default class {
           target.removeAttribute("aria-required")
         }
       } else if (addedNodes.length) {
-        this.overrideNodes(addedNodes)
+        this.reportValidationMessages(addedNodes)
       }
     }
   }
 
-  overrideNodes(nodes) {
-    const requiredCheckboxes = querySelectorAllNodes("input[type=checkbox][required]", nodes)
+  reportValidationMessages(nodes) {
+    const requiredCheckboxes = querySelectorAllNodes(this.selector, nodes)
 
     for (const checkbox of requiredCheckboxes) {
       if (checkbox.required) {
@@ -89,6 +88,10 @@ export default class {
     element.required = false
     element.setAttribute("aria-required", "true")
     setTimeout(() => this.ignoringMutations = false, 0)
+  }
+
+  willValidateGroup(group) {
+    return group.length > 0 && this.enabled(group)
   }
 
   get element() {
