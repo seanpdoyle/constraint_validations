@@ -43,9 +43,10 @@
 
     <%= form.collection_check_boxes :multiple_required_checkbox, [
           ["1", "Multiple required checkbox #1"],
-          ["2", "Multiple required checkbox #2"]
+          ["2", "Multiple required checkbox #2"],
+          ["3", "Multiple required checkbox #3", disabled: true]
         ], :first, :second do |builder| %>
-      <%= builder.check_box %>
+      <%= builder.check_box builder.object.third.to_h %>
       <%= builder.label %>
     <% end %>
   </fieldset>

@@ -1,5 +1,8 @@
 var ConstraintValidations = function() {
   "use strict";
+  function isFieldElement(element) {
+    return !element.disabled && "validity" in element && element.willValidate;
+  }
   function readValidationMessages(input) {
     try {
       return JSON.parse(input.getAttribute("data-validation-messages")) || {};
@@ -32,7 +35,7 @@ var ConstraintValidations = function() {
       return group.length > 0 && this.enabled(group);
     }
     validate(target) {
-      const checkboxesInGroup = checkboxGroup(target);
+      const checkboxesInGroup = checkboxGroup(target).filter(isFieldElement);
       const allRequired = checkboxesInGroup.every((checkbox => checkbox.getAttribute("aria-required") === "true"));
       const someChecked = checkboxesInGroup.some((checkbox => checkbox.checked));
       if (allRequired && someChecked) {
@@ -268,9 +271,6 @@ var ConstraintValidations = function() {
     const validationMessages = Object.entries(readValidationMessages(input));
     const [_, validationMessage] = validationMessages.find((([key]) => input.validity[key])) || [ null, null ];
     return validationMessage || input.validationMessage;
-  }
-  function isFieldElement(element) {
-    return !element.disabled && "validity" in element && element.willValidate;
   }
   return ConstraintValidations;
 }();

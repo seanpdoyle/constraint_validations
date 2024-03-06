@@ -1,4 +1,4 @@
-import { readValidationMessages } from "./util"
+import { isFieldElement, readValidationMessages } from "./util"
 import CheckboxValidator from "./validators/checkbox_validator"
 
 const defaultOptions = {
@@ -187,8 +187,4 @@ function getValidationMessage(input) {
   const [ _, validationMessage ] = validationMessages.find(([ key ]) => input.validity[key]) || [ null, null ]
 
   return validationMessage || input.validationMessage
-}
-
-function isFieldElement(element) {
-  return !element.disabled && "validity" in element && element.willValidate
 }
