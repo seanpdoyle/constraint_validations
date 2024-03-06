@@ -11,6 +11,7 @@ function readValidationMessages(input) {
 }
 
 class CheckboxValidator {
+  selector = "input[type=checkbox]:required"
   ignoringMutations = false
 
   constructor(constraintValidations, predicate) {
@@ -27,7 +28,7 @@ class CheckboxValidator {
       childList: true,
       subtree: true
     });
-    this.overrideNodes(this.element.querySelectorAll("input[type=checkbox][required]"));
+    this.reportValidationMessages(this.element.querySelectorAll(this.selector));
   }
 
   disconnect() {
@@ -36,10 +37,6 @@ class CheckboxValidator {
 
   willValidate(target) {
     return this.willValidateGroup(checkboxGroup(target))
-  }
-
-  willValidateGroup(group) {
-    return group.length > 0 && this.enabled(group)
   }
 
   validate(target) {
@@ -61,6 +58,8 @@ class CheckboxValidator {
     }
   }
 
+  // Private
+
   handleMutation = (mutationRecords) => {
     if (this.ignoringMutations) return
 
@@ -72,13 +71,13 @@ class CheckboxValidator {
           target.removeAttribute("aria-required");
         }
       } else if (addedNodes.length) {
-        this.overrideNodes(addedNodes);
+        this.reportValidationMessages(addedNodes);
       }
     }
   }
 
-  overrideNodes(nodes) {
-    const requiredCheckboxes = querySelectorAllNodes("input[type=checkbox][required]", nodes);
+  reportValidationMessages(nodes) {
+    const requiredCheckboxes = querySelectorAllNodes(this.selector, nodes);
 
     for (const checkbox of requiredCheckboxes) {
       if (checkbox.required) {
@@ -99,6 +98,10 @@ class CheckboxValidator {
     element.required = false;
     element.setAttribute("aria-required", "true");
     setTimeout(() => this.ignoringMutations = false, 0);
+  }
+
+  willValidateGroup(group) {
+    return group.length > 0 && this.enabled(group)
   }
 
   get element() {
@@ -178,7 +181,7 @@ class ConstraintValidations {
     this.reportValidationMessages(
       this.element instanceof HTMLFormElement ?
         [this.element] :
-        Array.from(this.element.querySelectorAll("form"))
+        this.element.querySelectorAll("form")
     );
   }
 
@@ -202,12 +205,15 @@ class ConstraintValidations {
   }
 
   clearAndReportFieldValidity = ({ target }) => {
-    const validator = this.validators.find(validator => validator.willValidate(target));
-
-    if (validator) {
-      validator.validate(target);
-    } else if (isFieldElement(target)) {
+    if (isFieldElement(target)) {
       this.clearValidity(target);
+
+      for (const validator of this.validators) {
+        if (validator.willValidate(target)) {
+          validator.validate(target);
+        }
+      }
+
       this.reportValidity(target);
     }
   }
