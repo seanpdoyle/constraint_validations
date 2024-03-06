@@ -419,6 +419,8 @@ Then, render a group of `<input type="checkbox">` elements as `[required]`:
 </fieldset>
 ```
 
+Disabled form controls won't be validated.
+
 #### How it works
 
 To work-around the quirks of built-in support, `ConstraintValidations` monitors

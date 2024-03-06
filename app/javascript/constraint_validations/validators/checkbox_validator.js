@@ -1,4 +1,4 @@
-import { readValidationMessages } from "../util"
+import { isFieldElement, readValidationMessages } from "../util"
 
 export default class {
   ignoringMutations = false
@@ -33,7 +33,7 @@ export default class {
   }
 
   validate(target) {
-    const checkboxesInGroup = checkboxGroup(target)
+    const checkboxesInGroup = checkboxGroup(target).filter(isFieldElement)
     const allRequired = checkboxesInGroup.every((checkbox) => checkbox.getAttribute("aria-required") === "true")
     const someChecked = checkboxesInGroup.some((checkbox) => checkbox.checked)
 

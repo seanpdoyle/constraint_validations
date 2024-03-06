@@ -289,13 +289,17 @@ class ValidationsTest < ApplicationSystemTestCase
   end
 
   test "observes connection of multiple [required] checkboxes" do
+    connected = proc do |input|
+      input.assert_matches_selector :element, required: false, "aria-required": "true"
+    end
+
     visit new_form_path(hotwire_enabled: true, checkbox: true)
     click_button "Skip Validations"
 
     within_fieldset "Multiple [required] checkboxes" do
-      assert_unchecked_field "Multiple required checkbox", exact: false, valid: false, count: 2 do |input|
-        input.assert_matches_selector :element, required: false, "aria-required": "true"
-      end
+      assert_unchecked_field "Multiple required checkbox #1", valid: false, &connected
+      assert_unchecked_field "Multiple required checkbox #2", valid: false, &connected
+      assert_unchecked_field "Multiple required checkbox #3", disabled: true, valid: true, &connected
     end
   end
 
