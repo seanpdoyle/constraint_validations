@@ -239,7 +239,8 @@ class ValidationsTest < ApplicationSystemTestCase
     visit new_form_path(checkbox: true)
 
     within_fieldset "Multiple [required] checkboxes" do
-      assert_unchecked_field "Multiple required checkbox", exact: false, valid: false, count: 2 do |input|
+      assert_no_text "can't be blank"
+      assert_unchecked_field "Multiple required checkbox", exact: false, count: 2 do |input|
         input.assert_matches_selector :element, required: false, "aria-required": "true"
       end
 
