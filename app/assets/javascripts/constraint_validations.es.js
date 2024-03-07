@@ -2,6 +2,10 @@ function isFieldElement(element) {
   return !element.disabled && "validity" in element && element.willValidate
 }
 
+function isAriaInvalid(element) {
+  return element.getAttribute("aria-invalid") === "true"
+}
+
 function readValidationMessages(input) {
   try {
     return JSON.parse(input.getAttribute("data-validation-messages")) || {}
@@ -11,7 +15,7 @@ function readValidationMessages(input) {
 }
 
 class CheckboxValidator {
-  selector = "input[type=checkbox]:required"
+  selector = "input[type=checkbox]"
   ignoringMutations = false
 
   constructor(constraintValidations, predicate) {
@@ -23,15 +27,17 @@ class CheckboxValidator {
   }
 
   connect() {
+    this.element.addEventListener("invalid", this.handleInvalid, { capture: true, passive: true });
     this.mutationObserver.observe(this.element, {
       attributeFilter: ["required"],
       childList: true,
       subtree: true
     });
-    this.reportValidationMessages(this.element.querySelectorAll(this.selector));
+    this.reportValidationMessages(this.element.querySelectorAll(this.selector), isAriaInvalid);
   }
 
   disconnect() {
+    this.element.removeEventListener("invalid", this.handleInvalid, { capture: true, passive: true });
     this.mutationObserver.disconnect();
   }
 
@@ -40,8 +46,8 @@ class CheckboxValidator {
   }
 
   validate(target) {
-    const checkboxesInGroup = checkboxGroup(target).filter(isFieldElement);
-    const allRequired = checkboxesInGroup.every((checkbox) => checkbox.getAttribute("aria-required") === "true");
+    const checkboxesInGroup = checkboxGroup(target).filter(isCheckboxElement);
+    const allRequired = checkboxesInGroup.every((checkbox) => isRequired(checkbox));
     const someChecked = checkboxesInGroup.some((checkbox) => checkbox.checked);
 
     if (allRequired && someChecked) {
@@ -60,6 +66,18 @@ class CheckboxValidator {
 
   // Private
 
+  handleInvalid = ({ target }) => {
+    const checkboxes = new Set;
+
+    for (const element of target.form.elements) {
+      if (isCheckboxElement(element) && this.willValidate(element)) {
+        checkboxes.add(element);
+      }
+    }
+
+    this.reportValidationMessages(checkboxes);
+  }
+
   handleMutation = (mutationRecords) => {
     if (this.ignoringMutations) return
 
@@ -71,22 +89,23 @@ class CheckboxValidator {
           target.removeAttribute("aria-required");
         }
       } else if (addedNodes.length) {
-        this.reportValidationMessages(addedNodes);
+        this.reportValidationMessages(addedNodes, isAriaInvalid);
       }
     }
   }
 
-  reportValidationMessages(nodes) {
+  reportValidationMessages(nodes, willReport = () => true) {
     const requiredCheckboxes = querySelectorAllNodes(this.selector, nodes);
 
     for (const checkbox of requiredCheckboxes) {
-      if (checkbox.required) {
+      if (isRequired(checkbox)) {
         const group = checkboxGroup(checkbox);
 
         if (this.willValidateGroup(group)) {
           for (const checkboxInGroup of group) {
             this.swapRequiredWithAriaRequired(checkboxInGroup);
-            if (checkboxInGroup.getAttribute("aria-invalid") === "true") {
+
+            if (willReport(checkboxInGroup)) {
               this.validate(checkboxInGroup);
             }
           }
@@ -147,6 +166,14 @@ function querySelectorAllNodes(selector, nodes, elements = new Set) {
   }
 
   return Array.from(elements)
+}
+
+function isCheckboxElement(element) {
+  return isFieldElement(element) && element.type === "checkbox"
+}
+
+function isRequired(element) {
+  return element.required || element.getAttribute("aria-required") === "true"
 }
 
 const defaultOptions = {
@@ -231,7 +258,7 @@ class ConstraintValidations {
 
     for (const form of forms) {
       for (const element of Array.from(form.elements).filter(isFieldElement)) {
-        const serverRenderedInvalid = /true/i.test(element.getAttribute("aria-invalid"));
+        const serverRenderedInvalid = isAriaInvalid(element);
         const id = element.getAttribute("aria-errormessage");
         const errorMessageElement = document.getElementById(id);
         const validationMessage = errorMessageElement?.textContent;

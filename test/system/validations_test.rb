@@ -235,6 +235,39 @@ class ValidationsTest < ApplicationSystemTestCase
     end
   end
 
+  test "checkbox with multiple [required] checkbox validates on submit after initial connect" do
+    visit new_form_path(disableSubmitWhenInvalid: false, checkbox: true)
+
+    within_fieldset "Multiple [required] checkboxes" do
+      assert_no_text "can't be blank"
+      assert_unchecked_field "Multiple required checkbox", exact: false, count: 2 do |input|
+        input.assert_matches_selector :element, required: false, "aria-required": "true"
+      end
+    end
+
+    click_button "Validate and Submit"
+
+    within_fieldset "Multiple [required] checkboxes" do
+      assert_unchecked_field "Multiple required checkbox", exact: false, valid: false, described_by: "can't be blank", validation_message: "can't be blank", count: 2
+    end
+  end
+
+  test "checkbox with multiple [required] checkbox validates on submit after re-render" do
+    visit new_form_path(hotwire_enabled: true, disableSubmitWhenInvalid: false, checkbox: true)
+    click_button "Skip Validations"
+    check "Single required checkbox"
+    check "Multiple required checkbox #1"
+
+    assert_no_field valid: false
+
+    uncheck "Multiple required checkbox #1"
+    click_button "Validate and Submit"
+
+    within_fieldset "Multiple [required] checkboxes" do
+      assert_unchecked_field "Multiple required checkbox", exact: false, valid: false, described_by: "can't be blank", validation_message: "can't be blank", count: 2
+    end
+  end
+
   test "checkbox with multiple [required] checkbox requires one to be checked" do
     visit new_form_path(checkbox: true)
 

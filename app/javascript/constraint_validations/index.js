@@ -1,4 +1,4 @@
-import { isFieldElement, readValidationMessages } from "./util"
+import { isAriaInvalid, isFieldElement, readValidationMessages } from "./util"
 import CheckboxValidator from "./validators/checkbox_validator"
 
 const defaultOptions = {
@@ -83,7 +83,7 @@ export default class ConstraintValidations {
 
     for (const form of forms) {
       for (const element of Array.from(form.elements).filter(isFieldElement)) {
-        const serverRenderedInvalid = /true/i.test(element.getAttribute("aria-invalid"))
+        const serverRenderedInvalid = isAriaInvalid(element)
         const id = element.getAttribute("aria-errormessage")
         const errorMessageElement = document.getElementById(id)
         const validationMessage = errorMessageElement?.textContent
