@@ -70,7 +70,9 @@ var ConstraintValidations = function() {
           if (this.willValidateGroup(group)) {
             for (const checkboxInGroup of group) {
               this.swapRequiredWithAriaRequired(checkboxInGroup);
-              this.validate(checkboxInGroup);
+              if (checkboxInGroup.getAttribute("aria-invalid") === "true") {
+                this.validate(checkboxInGroup);
+              }
             }
           }
         }

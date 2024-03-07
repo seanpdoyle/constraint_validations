@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Don't validate Checkbox groups until `validateOn` events
+
+    *Sean Doyle*
+
 *   Add support for opting-into Checkbox group `[required]` validation
 
     *Sean Doyle*
