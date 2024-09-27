@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Expand version matrix to include `ruby@3.3` and `rails@7.2`
+
+    *Sean Doyle*
+
 *   Don't validate Checkbox groups until `validateOn` events
 
     *Sean Doyle*

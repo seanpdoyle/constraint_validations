@@ -16,19 +16,22 @@ jobs:
           - "3.0"
           - "3.1"
           - "3.2"
+          - "3.3"
         rails-version:
-          - "7.1"
-          - "7.0"
           - "6.1"
+          - "7.0"
+          - "7.1"
+          - "7.2"
           - "main"
         selenium-browser:
           - "headless_chrome"
           - "headless_firefox"
         exclude:
-          - ruby-version: "2.7"
-            rails-version: "main"
-          - ruby-version: "3.0"
-            rails-version: "main"
+          - { ruby-version: "2.7", rails-version: "7.2" }
+          - { ruby-version: "2.7", rails-version: "main" }
+          - { ruby-version: "3.0", rails-version: "7.2" }
+          - { ruby-version: "3.0", rails-version: "main" }
+          - { ruby-version: "3.1", rails-version: "main" }
 
     env:
       RAILS_VERSION: "${{ matrix.rails-version }}"
