@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Use `Set.add` correctly
+
+    *Sean Doyle*
+
 ## 0.1.1 - 2024-09-27
 
 *   Expand version matrix to include `ruby@3.3` and `rails@7.2`

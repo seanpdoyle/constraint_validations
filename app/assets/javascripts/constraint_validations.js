@@ -134,7 +134,10 @@ var ConstraintValidations = function() {
         if (node.matches(selector)) {
           elements.add(node);
         }
-        elements.add(...querySelectorAllNodes(selector, node.children, elements));
+        const childNodes = querySelectorAllNodes(selector, node.children, elements);
+        for (const childNode of childNodes) {
+          elements.add(childNode);
+        }
       }
     }
     return Array.from(elements);
