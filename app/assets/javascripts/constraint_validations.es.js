@@ -161,7 +161,11 @@ function querySelectorAllNodes(selector, nodes, elements = new Set) {
         elements.add(node);
       }
 
-      elements.add(...querySelectorAllNodes(selector, node.children, elements));
+      const childNodes = querySelectorAllNodes(selector, node.children, elements);
+
+      for (const childNode of childNodes) {
+        elements.add(childNode);
+      }
     }
   }
 
