@@ -304,16 +304,16 @@ By default, fields will validate (and re-validate) on [input][] and [blur][]
 events.
 
 To change the events that will trigger validation, pass along a
-`validatesOn:` option to either the `ConstraintValidations`
+`validateOn:` option to either the `ConstraintValidations`
 constructor, or to the `ConstraintValidations.connect` static method:
 
 ```js
 const element = ...
 const eventNames = ["blur", "input", "my-custom-event"]
 
-new ConstraintValidations(element, { validatesOn: eventNames })
+new ConstraintValidations(element, { validateOn: eventNames })
 
-ConstraintValidations.connect(element, { validatesOn: eventNames })
+ConstraintValidations.connect(element, { validateOn: eventNames })
 ```
 
 [input]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event
