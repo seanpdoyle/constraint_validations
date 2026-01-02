@@ -2,7 +2,7 @@
 
 Integrate ActiveModel::Validations, ActionView, and Browser-provided Constraint Validation API
 
-**Currently testing against `rails@main` or `rails >= 6.2.0.alpha`**
+**Currently testing against `rails@main` or `rails >= 8.1.0`**
 
 ## ActionView and Accessibility
 

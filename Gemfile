@@ -16,6 +16,8 @@ else
 end
 
 gem "rails", rails_constraint
+gem "mutex_m"
+gem "ostruct"
 gem "sprockets-rails"
 gem "turbo-rails"
 gem "stimulus-rails"
@@ -23,6 +25,7 @@ gem "stimulus-rails"
 group :test do
   gem "capybara", ">= 3.26", require: "capybara/minitest"
   gem "capybara_accessible_selectors", github: "citizensadvice/capybara_accessible_selectors", tag: "v0.4.1"
+  gem "minitest", "< 6"
   gem "rexml"
   gem "selenium-webdriver"
   gem "webrick"
