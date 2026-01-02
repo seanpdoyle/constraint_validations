@@ -283,11 +283,13 @@ If your application uses Stimulus, declare a [controller][] and invoke
 
 ```javascript
 import { Controller } from "@hotwired/stimulus"
-import ConstraintValidations from "@seanpdoyle/constraint_validations"
+import ConstraintValidations from "constraint_validations"
 
 export default class extends Controller {
+  static values = { options: Object }
+
   initialize() {
-    this.validations = new ConstraintValidations(this.element)
+    this.validations = new ConstraintValidations(this.element, this.optionsValue)
   }
 
   connect() {

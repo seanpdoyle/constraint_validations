@@ -125,7 +125,7 @@ __END__
         "imports": {
           "@hotwired/turbo-rails": "<%= asset_path("turbo.js") %>",
           "@hotwired/stimulus": "<%= asset_path("stimulus.js") %>",
-          "@seanpdoyle/constraint_validations": "<%= asset_path("constraint_validations.es.js") %>"
+          "constraint_validations": "<%= asset_path("constraint_validations.es.js") %>"
         }
       }
     </script>
@@ -133,7 +133,7 @@ __END__
     <script type="module">
       import "@hotwired/turbo-rails"
       import { Application, Controller } from "@hotwired/stimulus"
-      import ConstraintValidations from "@seanpdoyle/constraint_validations"
+      import ConstraintValidations from "constraint_validations"
 
       const application = Application.start()
       application.register("constraint-validations", class extends Controller {
