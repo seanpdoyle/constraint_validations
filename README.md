@@ -226,7 +226,13 @@ By default, the engine will set the
 [`default_form_builder`][default_form_builder] to
 `ConstraintValidations::FormBuilder`. If your application is already using
 another form builder class, you can extend it by mixing-in the
-`ConstraintValidations::FormBuilder::Extensions` module.
+`ConstraintValidations::FormBuilder::Extensions` module:
+
+```ruby
+config.constraint_validations.default_form_builder = false
+
+CustomFormBuilder.include ConstraintValidations::FormBuilder
+```
 
 [default_form_builder]: https://edgeapi.rubyonrails.org/classes/ActionController/FormBuilder.html
 
