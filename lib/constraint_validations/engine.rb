@@ -7,6 +7,7 @@ module ConstraintValidations
     isolate_namespace ConstraintValidations
 
     config.constraint_validations = ActiveSupport::InheritableOptions.new(
+      default_form_builder: ConstraintValidations::FormBuilder,
       validation_messages_for_object: lambda do |object:, method_name:, **options|
         {
           badInput: object.errors.generate_message(method_name, :invalid),
@@ -116,8 +117,12 @@ module ConstraintValidations
     end
 
 
-    ActiveSupport.on_load :action_controller_base do
-      default_form_builder ConstraintValidations::FormBuilder
+    config.after_initialize do |app|
+      ActiveSupport.on_load :action_controller_base do
+        if (form_builder = app.config.constraint_validations.default_form_builder)
+          default_form_builder form_builder
+        end
+      end
     end
 
     initializer "constraint_validations.assets" do |app|

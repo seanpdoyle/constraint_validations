@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*   Support skipping `ActionController ConstraintValidations::FormBuilder` when
+    `config.constraint_validations.default_form_builder = false`.
+
+    *Sean Doyle*
+
 *   Drop [end-of-life Ruby][] versions 2.7, 3.0, and 3.1
 
     *Sean Doyle*
