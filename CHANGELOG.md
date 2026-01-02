@@ -6,13 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-*   Drop [end-of-life Ruby][] versions 2.7 and 3.0.
+*   Drop [end-of-life Ruby][] versions 2.7, 3.0, and 3.1
 
     *Sean Doyle*
 
 [end-of-life Ruby]: https://www.ruby-lang.org/en/downloads/branches/
 
-*   Drop [end-of-life Rails][] versions 6.1 and 7.0
+*   Drop [end-of-life Rails][] versions 6.1, 7.0, and 7.1
 
     *Sean Doyle*
 
